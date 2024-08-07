@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+* {
+    box-sizing: border-box;
+}
+
+.group:hover .group-hover\:stroke-white path {
+    stroke: white;
+}
+
+.group:hover .group-hover\:stroke-white line {
+    stroke: white;
+}
+
+.group:hover .group-hover\:stroke-black path {
+    stroke: black;
+}
+
+input:focus ~ label,
+input:not(:placeholder-shown) ~ label {
+    @apply transform;
+    @apply text-xs text-gray-500;
+    @apply -translate-y-6;
+}
+
+input:focus ~ label {
+    @apply text-gray-500;
+    @apply left-0;
+}
