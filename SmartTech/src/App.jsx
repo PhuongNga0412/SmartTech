@@ -1,24 +1,9 @@
+import { useEffect } from "react";
 import "./App.css";
-import { ToastContainer } from "react-toastify";
+import { isJsonString } from "@/utils";
 
 function App() {
-    return (
-        <>
-            <ToastContainer
-                position="top-right"
-                autoClose={1500}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                // theme={localStorage.getItem("theme")}
-                // transition={Bounce}
-            />
-        </>
-    );
+    return <></>;
 }
 
 export default App;

@@ -2,13 +2,22 @@ const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const routes = require("./routes");
+const cors = require("cors");
 const bodyParser = require("body-parser");
+const bodyCookie = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3002;
 
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+    })
+);
 app.use(bodyParser.json());
+app.use(cookieParser());
 routes(app);
 
 mongoose

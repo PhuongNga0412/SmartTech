@@ -1,7 +1,42 @@
 import SignUpInputField from "@/pages/SignUp/SignUpInputField";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import * as UserService from "@/services/UserService";
+import { useMutationHooks } from "@/hook/useMutationHooks";
+import { Loading } from "@/components/LoadingComponent/Loading";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const mutation = useMutationHooks((data) => UserService.signupUser(data));
+    const { data, isPending, isSuccess, isError } = mutation;
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (isSuccess && data?.status !== "ERR") {
+            toast.success("Create");
+            navigate("/login");
+        } else if (isError) {
+            toast.error("create fail");
+        }
+    }, [isSuccess, isError]);
+
+    const handleOnchangeName = (value) => {
+        setName(value);
+    };
+    const handleOnchangeEmail = (value) => {
+        setEmail(value);
+    };
+    const handleOnchangePassword = (value) => {
+        setPassword(value);
+    };
+
+    const handleSignUp = () => {
+        mutation.mutate({ name, email, password });
+    };
+
     return (
         <>
             <div className="flex min-h-screen flex-1 mt-[60px] mb-[140px]">
@@ -23,36 +58,38 @@ const SignUp = () => {
                                         label="Name"
                                         name="name"
                                         type="text"
-                                        // value={email}
-                                        // onChange={(v) =>
-                                        //     setEmail(v.target.value)
-                                        // }
+                                        value={name}
+                                        onChange={handleOnchangeName}
                                     />
                                     <SignUpInputField
                                         label="Email or Phone Number"
                                         name="email"
                                         type="email"
-                                        // value={email}
-                                        // onChange={(v) =>
-                                        //     setEmail(v.target.value)
-                                        // }
+                                        value={email}
+                                        onChange={handleOnchangeEmail}
                                     />
                                     <SignUpInputField
                                         label="Password"
                                         name="password"
                                         type="password"
-                                        // value={password}
-                                        // onChange={(v) =>
-                                        //     setPassword(v.target.value)
-                                        // }
+                                        value={password}
+                                        onChange={handleOnchangePassword}
                                     />
 
                                     <div>
+                                        {data?.status === "ERR" && (
+                                            <span>{data?.message}</span>
+                                        )}
                                         <button
-                                            type="submit"
+                                            onClick={handleSignUp}
+                                            type="button"
                                             className="flex w-full justify-center rounded-md py-4 bg-red-500 px-3  font-semibold leading-6 text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                         >
-                                            Create an account
+                                            {isPending ? (
+                                                <Loading />
+                                            ) : (
+                                                "Create an account"
+                                            )}
                                         </button>
                                         <a
                                             href="#"

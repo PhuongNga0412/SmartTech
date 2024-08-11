@@ -1,6 +1,58 @@
 import SignUpInputField from "@/pages/SignUp/SignUpInputField";
+import { useEffect, useState } from "react";
+import * as UserService from "@/services/UserService";
+import { useMutationHooks } from "@/hook/useMutationHooks";
+import { Loading } from "@/components/LoadingComponent/Loading";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { updateUser } from "@/redux/slides/userSlide";
 
 const Login = () => {
+    const navigate = useNavigate();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const dispatch = useDispatch();
+
+    const mutation = useMutationHooks((data) => UserService.loginUser(data));
+    const { data, isPending, isSuccess } = mutation;
+
+    useEffect(() => {
+        if (isSuccess && data?.status !== "ERR") {
+            navigate("/");
+            localStorage.setItem(
+                "access_token",
+                JSON.stringify(data?.access_token)
+            );
+            if (data?.access_token) {
+                const decoded = jwtDecode(data?.access_token);
+                console.log("decoded", decoded);
+                if (decoded?.id) {
+                    handleGetDetailsUser(decoded?.id, data?.access_token);
+                }
+            }
+        }
+    }, [isSuccess]);
+
+    const handleGetDetailsUser = async (id, token) => {
+        const res = await UserService.getDetailsUser(id, token);
+        dispatch(updateUser({ ...res?.data, access_token: token }));
+        console.log("res - ", res);
+    };
+
+    const handleOnchangeEmail = (value) => {
+        setEmail(value);
+    };
+    const handleOnchangePassword = (value) => {
+        setPassword(value);
+    };
+    const handleSignIn = () => {
+        mutation.mutate({
+            email,
+            password,
+        });
+    };
+
     return (
         <>
             <div className="flex min-h-screen flex-1 mt-[60px] mb-[140px]">
@@ -26,31 +78,37 @@ const Login = () => {
                                         label="Email or Phone Number"
                                         name="email"
                                         type="email"
-                                        // value={email}
-                                        // onChange={(v) =>
-                                        //     setEmail(v.target.value)
-                                        // }
+                                        value={email}
+                                        onChange={handleOnchangeEmail}
                                     />
                                     <SignUpInputField
                                         label="Password"
                                         name="password"
                                         type="password"
-                                        // value={password}
-                                        // onChange={(v) =>
-                                        //     setPassword(v.target.value)
-                                        // }
+                                        value={password}
+                                        onChange={handleOnchangePassword}
                                     />
                                 </form>
                             </div>
 
                             <div className="mt-10">
                                 <div className="mt-6  grid-cols-2 gap-4 flex items-center">
-                                    <a
-                                        href="#"
+                                    {data?.status === "ERR" && (
+                                        <span>{data?.message}</span>
+                                    )}
+
+                                    <button
+                                        disabled={
+                                            email.length === 0 ||
+                                            password.length === 0 ||
+                                            isPending
+                                        }
+                                        onClick={handleSignIn}
                                         className="flex w-full items-center justify-center gap-3 rounded-md bg-red-500 px-3 py-4  font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-red-400 focus-visible:ring-transparent"
                                     >
-                                        Log In
-                                    </a>
+                                        {isPending ? <Loading /> : "Log In"}
+                                    </button>
+
                                     <div className="leading-6">
                                         <a
                                             href="#"

@@ -19,7 +19,7 @@ const ProductCard = ({ data }) => {
                         </button>
                     </div>
                     <img
-                        src="https://cdn-amz.woka.io/images/I/615Oj1+c3uL.jpg"
+                        src="https://i.pinimg.com/564x/82/39/18/823918e015243ab53be190ab33abd994.jpg"
                         alt="Product"
                         className="w-full h-auto object-cover rounded"
                     />

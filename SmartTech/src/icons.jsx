@@ -1465,9 +1465,9 @@ export const Wishlist = (
                 id="Vector"
                 d="M6 11.95C6 14.15 6.87 19.39 15.48 24.69C15.64 24.78 15.82 24.83 16 24.83C16.17 24.83 16.35 24.78 16.51 24.69C25.12 19.39 26 14.15 26 11.95C26 9.21 23.76 7 21 7C18.23 7 16 10 16 10C16 10 13.76 7 11 7C8.23 7 6 9.21 6 11.95Z"
                 stroke="#000000"
-                stroke-opacity="1.000000"
-                stroke-width="1.500000"
-                stroke-linejoin="round"
+                strokeOpacity="1.000000"
+                strokeWidth="1.500000"
+                strokeLinejoin="round"
             />
         </g>
     </svg>
@@ -1480,7 +1480,7 @@ export const IconPlus = (
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
     >
         <desc>Created with Pixso.</desc>
         <defs>
@@ -1492,7 +1492,7 @@ export const IconPlus = (
                     height="23.000000"
                     transform="translate(0.500000 0.500000)"
                     fill="white"
-                    fill-opacity="0"
+                    fillOpacity="0"
                 />
             </clipPath>
         </defs>
@@ -1503,15 +1503,15 @@ export const IconPlus = (
             height="23.000000"
             transform="translate(0.500000 0.500000)"
             fill="#FFFFFF"
-            fill-opacity="0"
+            fillOpacity="0"
         />
-        <g clip-path="url(#clip257_5014)">
+        <g clipPath="url(#clip257_5014)">
             <path
                 id="Vector"
                 d="M12 20L12 12L12 4M12 12L20 12M12 12L4 12"
                 stroke="#000000"
-                stroke-opacity="1.000000"
-                stroke-width="1.500000"
+                strokeOpacity="1.000000"
+                strokeWidth="1.500000"
             />
         </g>
     </svg>
@@ -1524,7 +1524,7 @@ export const IconMinus = (
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
     >
         <desc>Created with Pixso.</desc>
         <defs>
@@ -1536,7 +1536,7 @@ export const IconMinus = (
                     height="23.000000"
                     transform="translate(0.500000 0.500000)"
                     fill="white"
-                    fill-opacity="0"
+                    fillOpacity="0"
                 />
             </clipPath>
         </defs>
@@ -1547,16 +1547,16 @@ export const IconMinus = (
             height="23.000000"
             transform="translate(0.500000 0.500000)"
             fill="#FFFFFF"
-            fill-opacity="0"
+            fillOpacity="0"
         />
-        <g clip-path="url(#clip257_5009)">
+        <g clipPath="url(#clip257_5009)">
             <path
                 id="Vector"
                 d="M20 12L4 12"
                 stroke="#000000"
-                stroke-opacity="1.000000"
-                stroke-width="1.500000"
-                stroke-linecap="round"
+                strokeOpacity="1.000000"
+                strokeWidth="1.500000"
+                strokeLinecap="round"
             />
         </g>
     </svg>
@@ -1569,7 +1569,7 @@ export const IconDelivery = (
         viewBox="0 0 40 40"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
     >
         <desc>Created with Pixso.</desc>
         <defs>
@@ -1581,7 +1581,7 @@ export const IconDelivery = (
                     height="39.000000"
                     transform="translate(0.500000 0.500000)"
                     fill="white"
-                    fill-opacity="0"
+                    fillOpacity="0"
                 />
             </clipPath>
         </defs>
@@ -1592,67 +1592,67 @@ export const IconDelivery = (
             height="39.000000"
             transform="translate(0.500000 0.500000)"
             fill="#FFFFFF"
-            fill-opacity="0"
+            fillOpacity="0"
         />
-        <g clip-path="url(#clip261_4843)">
+        <g clipPath="url(#clip261_4843)">
             <path
                 id="Vector"
                 d="M11.66 31.66C9.82 31.66 8.33 30.17 8.33 28.33C8.33 26.49 9.82 25 11.66 25C13.5 25 15 26.49 15 28.33C15 30.17 13.5 31.66 11.66 31.66Z"
                 stroke="#000000"
-                stroke-opacity="1.000000"
-                stroke-width="2.000000"
-                stroke-linejoin="round"
+                strokeOpacity="1.000000"
+                strokeWidth="2.000000"
+                strokeLinejoin="round"
             />
             <path
                 id="Vector"
                 d="M28.33 31.66C26.49 31.66 25 30.17 25 28.33C25 26.49 26.49 25 28.33 25C30.17 25 31.66 26.49 31.66 28.33C31.66 30.17 30.17 31.66 28.33 31.66Z"
                 stroke="#000000"
-                stroke-opacity="1.000000"
-                stroke-width="2.000000"
-                stroke-linejoin="round"
+                strokeOpacity="1.000000"
+                strokeWidth="2.000000"
+                strokeLinejoin="round"
             />
             <path
                 id="Vector"
                 d="M8.33 28.33L7 28.33C5.89 28.33 5 27.43 5 26.33L5 21.66M3.33 8.33L19.66 8.33C20.77 8.33 21.66 9.22 21.66 10.33L21.66 28.33M15 28.33L25 28.33M31.66 28.33L33 28.33C34.1 28.33 35 27.43 35 26.33L35 18.33L30.58 10.97C30.22 10.36 29.57 10 28.86 10L21.66 10M35 18.33L21.66 18.33"
                 stroke="#000000"
-                stroke-opacity="1.000000"
-                stroke-width="2.000000"
-                stroke-linejoin="round"
+                strokeOpacity="1.000000"
+                strokeWidth="2.000000"
+                strokeLinejoin="round"
             />
             <path
                 id="Vector"
                 d="M8 28L6.66 28C5.56 28 4.66 27.1 4.66 26L4.66 21.33M3 8L19.33 8C20.43 8 21.33 8.89 21.33 10L21.33 28M15 28L24.66 28M32 28L32.66 28C33.77 28 34.66 27.1 34.66 26L34.66 18L30.25 10.63C29.88 10.03 29.23 9.66 28.53 9.66L21.33 9.66M34.66 18L21.33 18"
                 stroke="#000000"
-                stroke-opacity="1.000000"
-                stroke-width="2.000000"
-                stroke-linejoin="round"
+                strokeOpacity="1.000000"
+                strokeWidth="2.000000"
+                strokeLinejoin="round"
             />
             <path
                 id="Vector"
                 d="M5 11.81L11.66 11.81"
                 stroke="#000000"
-                stroke-opacity="1.000000"
-                stroke-width="2.000000"
-                stroke-linejoin="round"
-                stroke-linecap="round"
+                strokeOpacity="1.000000"
+                strokeWidth="2.000000"
+                strokeLinejoin="round"
+                strokeLinecap="round"
             />
             <path
                 id="Vector"
                 d="M1.81 15.45L8.48 15.45"
                 stroke="#000000"
-                stroke-opacity="1.000000"
-                stroke-width="2.000000"
-                stroke-linejoin="round"
-                stroke-linecap="round"
+                strokeOpacity="1.000000"
+                strokeWidth="2.000000"
+                strokeLinejoin="round"
+                strokeLinecap="round"
             />
             <path
                 id="Vector"
                 d="M5 19.09L11.66 19.09"
                 stroke="#000000"
-                stroke-opacity="1.000000"
-                stroke-width="2.000000"
-                stroke-linejoin="round"
-                stroke-linecap="round"
+                strokeOpacity="1.000000"
+                strokeWidth="2.000000"
+                strokeLinejoin="round"
+                strokeLinecap="round"
             />
         </g>
     </svg>
@@ -1665,7 +1665,7 @@ export const IconReturn = (
         viewBox="0 0 40 40"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
     >
         <desc>Created with Pixso.</desc>
         <defs>
@@ -1677,25 +1677,133 @@ export const IconReturn = (
                     height="39.000000"
                     transform="translate(0.500000 0.500000)"
                     fill="white"
-                    fill-opacity="0"
+                    fillOpacity="0"
                 />
             </clipPath>
         </defs>
-        <g clip-path="url(#clip261_4865)">
+        <g clipPath="url(#clip261_4865)">
             <path
                 id="Vector"
                 d="M33.33 18.33C32.92 15.4 31.56 12.68 29.46 10.59C27.35 8.51 24.62 7.18 21.68 6.8C18.75 6.42 15.77 7.02 13.2 8.5C10.64 9.98 8.63 12.26 7.5 15M6.66 8.33L6.66 15L13.33 15"
                 stroke="#000000"
-                stroke-opacity="1.000000"
-                stroke-width="2.000000"
-                stroke-linejoin="round"
+                strokeOpacity="1.000000"
+                strokeWidth="2.000000"
+                strokeLinejoin="round"
             />
             <path
                 id="Vector"
                 d="M6.66 21.66C7.07 24.59 8.43 27.31 10.53 29.4C12.64 31.48 15.37 32.81 18.31 33.19C21.24 33.57 24.22 32.97 26.79 31.49C29.35 30.01 31.36 27.73 32.5 25M33.33 31.66L33.33 25L26.66 25"
                 stroke="#000000"
+                strokeOpacity="1.000000"
+                strokeWidth="2.000000"
+                strokeLinejoin="round"
+            />
+        </g>
+    </svg>
+);
+
+export const IconMallBag = (
+    <svg
+        width="24.000000"
+        height="24.000000"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+    >
+        <desc>Created with Pixso.</desc>
+        <defs>
+            <clipPath id="clip44_1931">
+                <rect
+                    id="icon-mallbag"
+                    rx="-0.500000"
+                    width="23.000000"
+                    height="23.000000"
+                    transform="translate(0.500000 0.500000)"
+                    fill="white"
+                    fill-opacity="0"
+                />
+            </clipPath>
+        </defs>
+        <rect
+            id="icon-mallbag"
+            rx="-0.500000"
+            width="23.000000"
+            height="23.000000"
+            transform="translate(0.500000 0.500000)"
+            fill="#FFFFFF"
+            fill-opacity="0"
+        />
+        <g clip-path="url(#clip44_1931)">
+            <path
+                id="Vector"
+                d="M3 20.5C3 20.76 3.1 21.01 3.29 21.2C3.48 21.39 3.73 21.5 4 21.5L20 21.5C20.26 21.5 20.51 21.39 20.7 21.2C20.89 21.01 21 20.76 21 20.5L21 6.3L3 6.3L3 20.5Z"
+                stroke="#FAFAFA"
                 stroke-opacity="1.000000"
-                stroke-width="2.000000"
+                stroke-width="1.500000"
+                stroke-linejoin="round"
+            />
+            <path
+                id="Vector"
+                d="M21 6.3L18.16 2.5L5.83 2.5L3 6.3M15.77 9.6C15.77 11.69 14.08 13.4 12 13.4C9.91 13.4 8.22 11.69 8.22 9.6"
+                stroke="#FAFAFA"
+                stroke-opacity="1.000000"
+                stroke-width="1.500000"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+            />
+        </g>
+    </svg>
+);
+
+export const User = (
+    <svg
+        width="32.000000"
+        height="32.000000"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+    >
+        <desc>Created with Pixso.</desc>
+        <defs>
+            <clipPath id="clip44_1925">
+                <rect
+                    id="user"
+                    rx="-0.500000"
+                    width="31.000000"
+                    height="31.000000"
+                    transform="translate(0.500000 0.500000)"
+                    fill="white"
+                    fill-opacity="0"
+                />
+            </clipPath>
+        </defs>
+        <rect
+            id="user"
+            rx="-0.500000"
+            width="31.000000"
+            height="31.000000"
+            transform="translate(0.500000 0.500000)"
+            fill="#FFFFFF"
+            fill-opacity="0"
+        />
+        <g clip-path="url(#clip44_1925)">
+            <path
+                id="Vector"
+                d="M24 27L24 24.33C24 22.91 23.52 21.56 22.67 20.56C21.82 19.56 20.66 19 19.46 19L11.53 19C10.33 19 9.17 19.56 8.32 20.56C7.47 21.56 7 22.91 7 24.33L7 27"
+                stroke="#FAFAFA"
+                stroke-opacity="1.000000"
+                stroke-width="1.500000"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+            />
+            <path
+                id="Vector"
+                d="M16.5 14C14.01 14 12 11.98 12 9.5C12 7.01 14.01 5 16.5 5C18.98 5 21 7.01 21 9.5C21 11.98 18.98 14 16.5 14Z"
+                stroke="#FAFAFA"
+                stroke-opacity="1.000000"
+                stroke-width="1.500000"
                 stroke-linejoin="round"
             />
         </g>

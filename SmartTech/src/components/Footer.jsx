@@ -8,39 +8,23 @@ import { Link } from "react-router-dom";
 
 const navigation = {
     account: [
-        { name: "My Account", href: "#" },
-        { name: "Login / Register", href: "#" },
-        { name: "Cart", href: "#" },
-        { name: "Wishlist", href: "#" },
-        { name: "Shop", href: "#" },
+        { id: 1, name: "My Account", href: "#" },
+        { id: 2, name: "Login / Register", href: "#" },
+        { id: 3, name: "Cart", href: "#" },
+        { id: 4, name: "Wishlist", href: "#" },
+        { id: 5, name: "Shop", href: "#" },
     ],
     link: [
-        { name: "Privacy Policy", href: "#" },
-        { name: "Terms Of Use", href: "#" },
-        { name: "FAQ", href: "#" },
-        { name: "Contact", href: "#" },
+        { id: 1, name: "Privacy Policy", href: "#" },
+        { id: 2, name: "Terms Of Use", href: "#" },
+        { id: 3, name: "FAQ", href: "#" },
+        { id: 4, name: "Contact", href: "#" },
     ],
     social: [
-        {
-            name: "Facebook",
-            href: "#",
-            icon: IconFacebook,
-        },
-        {
-            name: "Instagram",
-            href: "#",
-            icon: IconTwitter,
-        },
-        {
-            name: "X",
-            href: "#",
-            icon: IconInstagrem,
-        },
-        {
-            name: "GitHub",
-            href: "#",
-            icon: IconLinkedin,
-        },
+        { id: 1, name: "Facebook", href: "#", icon: IconFacebook },
+        { id: 2, name: "Instagram", href: "#", icon: IconTwitter },
+        { id: 3, name: "X", href: "#", icon: IconInstagrem },
+        { id: 4, name: "GitHub", href: "#", icon: IconLinkedin },
     ],
 };
 

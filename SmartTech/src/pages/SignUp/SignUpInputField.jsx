@@ -1,11 +1,18 @@
-const SignUpInputField = ({ label, name, type = "text", ...rest }) => {
+const SignUpInputField = (props) => {
+    // { label, name, type = "text", ...rest }
+    const { label, name, type = "text", ...rests } = props;
+    const handleOnchangeInput = (e) => {
+        props.onChange(e.target.value);
+    };
+
     return (
         <div className="relative z-0 w-full mb-8">
             <input
-                {...rest}
+                {...rests}
                 id={name}
                 type={type}
                 placeholder=" "
+                onChange={handleOnchangeInput}
                 className="pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-black border-gray-200"
             />
             <label
