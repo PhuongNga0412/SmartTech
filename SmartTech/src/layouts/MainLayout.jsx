@@ -49,7 +49,7 @@ const MainLayout = () => {
             const { decoded } = handleDecoded();
             if (decoded?.exp < currentTime.getTime() / 1000) {
                 const data = await UserService.refreshToken();
-                config.headers["token"] = `Beare ${data?.access_token}`;
+                config.headers["token"] = `Bearer ${data?.access_token}`;
             }
             return config;
         },

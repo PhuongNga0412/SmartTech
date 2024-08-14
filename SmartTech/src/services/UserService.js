@@ -48,3 +48,16 @@ export const logoutUser = async () => {
     );
     return res.data;
 };
+
+export const updateUser = async (id, data, access_token) => {
+    const res = await axiosJWT.put(
+        `${import.meta.env.VITE_API_URL_BACKEND}/user/update-user/${id}`,
+        data,
+        {
+            headers: {
+                token: `Beare ${access_token}`,
+            },
+        }
+    );
+    return res.data;
+};

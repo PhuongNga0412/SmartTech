@@ -1,4 +1,94 @@
+import InputForm from "@/components/InputForm.jsx/InputForm";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import * as UserService from "@/services/UserService";
+import { useMutationHooks } from "@/hook/useMutationHooks";
+import { toast } from "react-toastify";
+import { updateUser } from "@/redux/slides/userSlide";
+
 const Account = () => {
+    const dispatch = useDispatch();
+    const user = useSelector((state) => state.user);
+
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [address, setAddress] = useState("");
+    const [avatar, setAvatar] = useState("");
+
+    const mutation = useMutationHooks((data) => {
+        const { id, access_token, ...rests } = data;
+        UserService.updateUser(id, rests, access_token);
+    });
+    const { data, isPending, isSuccess, isError } = mutation;
+
+    useEffect(() => {
+        setName(user?.name);
+        setEmail(user?.email);
+        setPhone(user?.phone);
+        setAddress(user?.address);
+        setAvatar(user?.avatar);
+    }, [user]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success("update ok");
+            handleGetDetailsUser(user?.id, user?.access_token);
+        } else if (isError) {
+            toast.error("Update fail");
+        }
+    }, [isSuccess, isError]);
+
+    const handleGetDetailsUser = async (id, token) => {
+        const res = await UserService.getDetailsUser(id, token);
+        dispatch(updateUser({ ...res?.data, access_token: token }));
+        console.log("res - ", res);
+    };
+
+    const handleChangeName = (value) => {
+        setName(value);
+    };
+    const handleChangeEmail = (value) => {
+        setEmail(value);
+    };
+    const handleChangePhone = (value) => {
+        setPhone(value);
+    };
+    const handleChangeAddress = (value) => {
+        setAddress(value);
+    };
+    const handleChangeAvatar = async (event) => {
+        const file = event.target.files[0];
+        const base64 = await convertBase64(file);
+        setAvatar(base64);
+    };
+
+    const convertBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            console.log(fileReader);
+            fileReader.readAsDataURL(file);
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+        });
+    };
+
+    const handleUpdateUser = () => {
+        mutation.mutate({
+            id: user?.id,
+            name,
+            email,
+            phone,
+            address,
+            avatar,
+            access_token: user?.access_token,
+        });
+    };
+
     return (
         <div>
             <div className="text-sm my-20">Home / My Account</div>
@@ -49,39 +139,78 @@ const Account = () => {
                     <form className="space-y-4">
                         <div className="flex space-x-4">
                             <div className="w-1/2">
-                                <label className="block mb-2">First Name</label>
-                                <input
+                                <InputForm
+                                    label="Name"
+                                    name="name"
                                     type="text"
-                                    className="w-full p-3 border rounded"
-                                    placeholder="Md"
+                                    value={name}
+                                    onChange={handleChangeName}
                                 />
                             </div>
                             <div className="w-1/2">
-                                <label className="block mb-2">Last Name</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-3 border rounded"
-                                    placeholder="Rimel"
+                                <InputForm
+                                    label="Phone Number"
+                                    name="phone"
+                                    type="phone"
+                                    value={phone}
+                                    onChange={handleChangePhone}
                                 />
                             </div>
                         </div>
                         <div>
-                            <label className="block mb-2">Email</label>
-                            <input
+                            <InputForm
+                                label="Email"
+                                name="email"
                                 type="email"
-                                className="w-full p-3 border rounded"
-                                placeholder="rimel11@gmail.com"
+                                value={email}
+                                onChange={handleChangeEmail}
                             />
                         </div>
                         <div>
-                            <label className="block mb-2">Address</label>
-                            <input
+                            <InputForm
+                                label="Address"
+                                name="address"
                                 type="text"
-                                className="w-full p-3 border rounded"
-                                placeholder="Kingston, 5236, United States"
+                                value={address}
+                                onChange={handleChangeAddress}
                             />
                         </div>
-                        <div className="mt-6">
+                        <div>
+                            {/* <InputForm
+                                label="Avatar"
+                                name="avatar"
+                                type="file"
+                                value={avatar}
+                                onChange={(event) => {
+                                    handleChangeAvatar(event);
+                                }}
+                            /> */}
+                            <label
+                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                htmlFor="user_avatar"
+                            >
+                                Upload file
+                            </label>
+                            <input
+                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-4 rounded border border-gray-300 file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-white hover:file:bg-gray-100 hover:file:text-gray-700"
+                                aria-describedby="user_avatar_help"
+                                id="user_avatar"
+                                type="file"
+                                onChange={(event) => {
+                                    handleChangeAvatar(event);
+                                }}
+                            />
+                        </div>
+                        <div>
+                            {avatar && (
+                                <img
+                                    className="w-16 h-16 object-cover"
+                                    src={avatar}
+                                    alt=""
+                                />
+                            )}
+                        </div>
+                        {/* <div className="mt-6">
                             <div className="space-y-4">
                                 <div>
                                     <label className="block mb-2">
@@ -104,13 +233,14 @@ const Account = () => {
                                     placeholder="Confirm New Password"
                                 />
                             </div>
-                        </div>
+                        </div> */}
                         <div className="flex justify-end space-x-4 mt-6">
                             <button type="button" className="mr-8">
                                 Cancel
                             </button>
                             <button
-                                type="submit"
+                                onClick={handleUpdateUser}
+                                type="button"
                                 className="bg-red-500 text-white font-medium px-12 py-4 rounded"
                             >
                                 Save Changes

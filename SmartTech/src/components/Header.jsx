@@ -1,66 +1,52 @@
 "use client";
-
-import { useState } from "react";
+import imgLogo from "@/assets/image/logo.jpeg";
+import { useEffect, useState } from "react";
+import * as UserService from "@/services/UserService";
 import { Dialog, DialogPanel, PopoverGroup } from "@headlessui/react";
 import { FiSearch } from "react-icons/fi";
-import {
-    Bars3Icon,
-    ComputerDesktopIcon,
-    DevicePhoneMobileIcon,
-    TvIcon,
-    XMarkIcon,
-} from "@heroicons/react/24/outline";
-import { PhoneIcon, PlayCircleIcon } from "@heroicons/react/20/solid";
-import { TbDeviceWatchStats } from "react-icons/tb";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
-import { AccountIcon, CartIcon, HeartIcon, IconMallBag, User } from "../icons";
-import { useSelector } from "react-redux";
-import { Button, Popover } from "flowbite-react";
-
-const products = [
-    {
-        name: "Smartphone",
-        description: "Get a better understanding of your traffic",
-        href: "#",
-        icon: DevicePhoneMobileIcon,
-    },
-    {
-        name: "Laptop",
-        description: "Speak directly to your customers",
-        href: "#",
-        icon: ComputerDesktopIcon,
-    },
-    {
-        name: "TV",
-        description: "Your customers’ data will be safe and secure",
-        href: "#",
-        icon: TvIcon,
-    },
-    {
-        name: "Smartwatches",
-        description: "Connect with third-party tools",
-        href: "#",
-        icon: TbDeviceWatchStats,
-    },
-];
-const content = (
-    <div className="p-5 text-base text-gray-500 dark:text-gray-400">
-        <div className="flex gap-4 items-center">
-            <div>{User}</div>
-            <p>My Account</p>
-        </div>
-        <div className="flex gap-4 items-center">
-            <div>{IconMallBag}</div>
-            <p>My Order</p>
-        </div>
-    </div>
-);
+import {
+    AccountIcon,
+    CartIcon,
+    HeartIcon,
+    IconLogOut,
+    IconMallBag,
+} from "../icons";
+import { FiLogIn } from "react-icons/fi";
+import { RiSettings3Line } from "react-icons/ri";
+import { RiUserSettingsLine } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
+import { resetUser } from "@/redux/slides/userSlide";
+import { searchProduct } from "@/redux/slides/productSlide";
 
 const Header = () => {
+    const dispatch = useDispatch();
     // const navigate = useNavigate();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [userAvatar, setUserAvatar] = useState("");
+    const [search, setSearch] = useState("");
+
+    const onSearch = (e) => {
+        setSearch(e.target.value);
+        dispatch(searchProduct(e.target.value));
+    };
+
     const user = useSelector((state) => state.user);
-    console.log("user - ", user);
+
+    const toggleDropdown = () => {
+        setIsOpen(!isOpen);
+    };
+
+    useEffect(() => {
+        setUserAvatar(user?.avatar);
+    }, [user?.avatar]);
+
+    const handleLogOut = async () => {
+        await UserService.logoutUser();
+        dispatch(resetUser());
+    };
 
     return (
         <header className="bg-white  ">
@@ -69,13 +55,12 @@ const Header = () => {
                 className="container max-w-[1170px] mx-auto flex items-center justify-between pt-10 pb-4"
             >
                 <div className="flex lg:flex-1">
-                    <Link to="/" className="-m-1.5 p-1.5">
-                        <span className="sr-only">Your Company</span>
-                        <img
-                            alt=""
-                            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                            className="h-8 w-auto"
-                        />
+                    <Link
+                        to="/"
+                        className="flex items-center gap-2 -m-1.5 p-1.5"
+                    >
+                        <img alt="" src={imgLogo} className="h-8 w-auto" />
+                        <p className="text-xl font-semibold">SmartTech</p>
                     </Link>
                 </div>
                 <div className="flex lg:hidden">
@@ -107,21 +92,9 @@ const Header = () => {
                     >
                         About
                     </Link>
-                    <Link
-                        to="/signup"
-                        className="font-semibold leading-6 text-gray-900"
-                    >
-                        Sign Up
-                    </Link>
                 </PopoverGroup>
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-4">
-                    {/* <Link
-                        to="/login"
-                        className="text-sm font-semibold leading-6 text-gray-900"
-                    >
-                        Log in <span aria-hidden="true">&rarr;</span>
-                    </Link> */}
-
+                    {/* --------------------------------Search-------------------------------- */}
                     <div className="relative hidden md:block">
                         <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                             <div className="w-4 h-4 text-gray-500 dark:text-gray-400">
@@ -130,12 +103,15 @@ const Header = () => {
                             <span className="sr-only">Search icon</span>
                         </div>
                         <input
+                            value={search}
+                            onChange={onSearch}
                             type="text"
                             id="search-navbar"
                             className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="What are you looking for?"
                         />
                     </div>
+
                     <div className="relative text-2xl">
                         <Link to="/wishlist">{HeartIcon}</Link>
                         <div className="absolute inset-1/2 -top-1/2 w-4 h-4 bg-red-500 rounded-full text-white flex justify-center items-center text-sm">
@@ -148,11 +124,87 @@ const Header = () => {
                             4
                         </div>
                     </div>
-                    {user?.name && (
-                        <div className="text-2xl">
-                            <Popover content={content} placement="bottom">
-                                <Link to="/account">{AccountIcon}</Link>
-                            </Popover>
+                    {user?.access_token ? (
+                        <div className="relative text-2xl">
+                            {userAvatar ? (
+                                <img
+                                    onClick={toggleDropdown}
+                                    className="w-8 h-8 rounded-full object-cover border-solid border-2 border-gray-500 "
+                                    src={userAvatar}
+                                    alt="avatar"
+                                />
+                            ) : (
+                                <button onClick={toggleDropdown}>
+                                    {AccountIcon}
+                                </button>
+                            )}
+                            {isOpen && (
+                                <div className="absolute right-0 mt-2 z-10 min-w-[224px] flex flex-col gap-[13px] p-5 text-base dark:text-gray-400 bg-white rounded border">
+                                    <Link
+                                        onClick={toggleDropdown}
+                                        to="/account"
+                                        className="flex gap-4 items-center"
+                                    >
+                                        <RiUserSettingsLine className="text-2xl" />
+                                        <p>My Account</p>
+                                    </Link>
+                                    {user?.isAdmin && (
+                                        <Link
+                                            onClick={toggleDropdown}
+                                            to="/system/admin"
+                                            className="flex gap-4 items-center"
+                                        >
+                                            <div>
+                                                <RiSettings3Line className="text-2xl" />
+                                            </div>
+                                            <p>System Management</p>
+                                        </Link>
+                                    )}
+                                    <Link
+                                        to="/cart"
+                                        onClick={toggleDropdown}
+                                        className="flex gap-4 items-center"
+                                    >
+                                        <div>{IconMallBag}</div>
+                                        <p>My Order</p>
+                                    </Link>
+                                    <button
+                                        onClick={handleLogOut}
+                                        className="flex gap-4 items-center"
+                                    >
+                                        <div>{IconLogOut}</div>
+                                        <p>Log Out</p>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="relative text-2xl">
+                            <button onClick={toggleDropdown}>
+                                {AccountIcon}
+                            </button>
+
+                            {isOpen && (
+                                <div className="absolute right-0 mt-2 z-10 min-w-[224px] flex flex-col gap-[13px] p-5 text-base dark:text-gray-400 bg-white rounded border">
+                                    <Link
+                                        onClick={toggleDropdown}
+                                        to="/login"
+                                        className="flex gap-4 items-center"
+                                    >
+                                        <FiLogIn className="text-2xl" />
+                                        <p>Login</p>
+                                    </Link>
+
+                                    <Link
+                                        to="/signup"
+                                        onClick={toggleDropdown}
+                                        className="flex gap-4 items-center"
+                                    >
+                                        <FiLogIn className="text-2xl" />
+                                        <p>Sign Up</p>
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

@@ -1,9 +1,8 @@
-import { useEffect } from "react";
 import "./App.css";
-import { isJsonString } from "@/utils";
 
-function App() {
+const App = () => {
+    console.log("app");
     return <></>;
-}
+};
 
 export default App;

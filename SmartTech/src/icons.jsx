@@ -1709,7 +1709,7 @@ export const IconMallBag = (
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
     >
         <desc>Created with Pixso.</desc>
         <defs>
@@ -1721,7 +1721,7 @@ export const IconMallBag = (
                     height="23.000000"
                     transform="translate(0.500000 0.500000)"
                     fill="white"
-                    fill-opacity="0"
+                    fillOpacity="0"
                 />
             </clipPath>
         </defs>
@@ -1732,25 +1732,25 @@ export const IconMallBag = (
             height="23.000000"
             transform="translate(0.500000 0.500000)"
             fill="#FFFFFF"
-            fill-opacity="0"
+            fillOpacity="0"
         />
-        <g clip-path="url(#clip44_1931)">
+        <g clipPath="url(#clip44_1931)">
             <path
                 id="Vector"
                 d="M3 20.5C3 20.76 3.1 21.01 3.29 21.2C3.48 21.39 3.73 21.5 4 21.5L20 21.5C20.26 21.5 20.51 21.39 20.7 21.2C20.89 21.01 21 20.76 21 20.5L21 6.3L3 6.3L3 20.5Z"
-                stroke="#FAFAFA"
-                stroke-opacity="1.000000"
-                stroke-width="1.500000"
-                stroke-linejoin="round"
+                stroke="#000000"
+                strokeOpacity="1.000000"
+                strokeWidth="1.500000"
+                strokeLinejoin="round"
             />
             <path
                 id="Vector"
                 d="M21 6.3L18.16 2.5L5.83 2.5L3 6.3M15.77 9.6C15.77 11.69 14.08 13.4 12 13.4C9.91 13.4 8.22 11.69 8.22 9.6"
-                stroke="#FAFAFA"
-                stroke-opacity="1.000000"
-                stroke-width="1.500000"
-                stroke-linejoin="round"
-                stroke-linecap="round"
+                stroke="#000000"
+                strokeOpacity="1.000000"
+                strokeWidth="1.500000"
+                strokeLinejoin="round"
+                strokeLinecap="round"
             />
         </g>
     </svg>
@@ -1758,12 +1758,12 @@ export const IconMallBag = (
 
 export const User = (
     <svg
-        width="32.000000"
-        height="32.000000"
+        width="24.000000"
+        height="24.000000"
         viewBox="0 0 32 32"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
     >
         <desc>Created with Pixso.</desc>
         <defs>
@@ -1775,7 +1775,7 @@ export const User = (
                     height="31.000000"
                     transform="translate(0.500000 0.500000)"
                     fill="white"
-                    fill-opacity="0"
+                    fillOpacity="0"
                 />
             </clipPath>
         </defs>
@@ -1786,25 +1786,71 @@ export const User = (
             height="31.000000"
             transform="translate(0.500000 0.500000)"
             fill="#FFFFFF"
-            fill-opacity="0"
+            fillOpacity="0"
         />
-        <g clip-path="url(#clip44_1925)">
+        <g clipPath="url(#clip44_1925)">
             <path
                 id="Vector"
                 d="M24 27L24 24.33C24 22.91 23.52 21.56 22.67 20.56C21.82 19.56 20.66 19 19.46 19L11.53 19C10.33 19 9.17 19.56 8.32 20.56C7.47 21.56 7 22.91 7 24.33L7 27"
-                stroke="#FAFAFA"
-                stroke-opacity="1.000000"
-                stroke-width="1.500000"
-                stroke-linejoin="round"
-                stroke-linecap="round"
+                stroke="#000000"
+                strokeOpacity="1.000000"
+                strokeWidth="1.500000"
+                strokeLinejoin="round"
+                strokeLinecap="round"
             />
             <path
                 id="Vector"
                 d="M16.5 14C14.01 14 12 11.98 12 9.5C12 7.01 14.01 5 16.5 5C18.98 5 21 7.01 21 9.5C21 11.98 18.98 14 16.5 14Z"
-                stroke="#FAFAFA"
-                stroke-opacity="1.000000"
-                stroke-width="1.500000"
-                stroke-linejoin="round"
+                stroke="#000000"
+                strokeOpacity="1.000000"
+                strokeWidth="1.500000"
+                strokeLinejoin="round"
+            />
+        </g>
+    </svg>
+);
+
+export const IconLogOut = (
+    <svg
+        width="24.000000"
+        height="24.000000"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+    >
+        <desc>Created with Pixso.</desc>
+        <defs>
+            <clipPath id="clip47_1904">
+                <rect
+                    id="Icon-logout"
+                    rx="-0.500000"
+                    width="23.000000"
+                    height="23.000000"
+                    transform="matrix(-1 0 0 1 24.5 0.5)"
+                    fill="white"
+                    fillOpacity="0"
+                />
+            </clipPath>
+        </defs>
+        <rect
+            id="Icon-logout"
+            rx="-0.500000"
+            width="23.000000"
+            height="23.000000"
+            transform="matrix(-1 0 0 1 24.5 0.5)"
+            fill="#FFFFFF"
+            fillOpacity="0"
+        />
+        <g clipPath="url(#clip47_1904)">
+            <path
+                id="Vector"
+                d="M4 12L13.5 12M6 15L3 12L6 9M11 7L11 6C11 5.46 11.21 4.96 11.58 4.58C11.96 4.21 12.46 4 13 4L18 4C18.53 4 19.03 4.21 19.41 4.58C19.78 4.96 20 5.46 20 6L20 18C20 18.53 19.78 19.03 19.41 19.41C19.03 19.78 18.53 20 18 20L13 20C12.46 20 11.96 19.78 11.58 19.41C11.21 19.03 11 18.53 11 18L11 17"
+                stroke="#000000"
+                strokeOpacity="1.000000"
+                strokeWidth="1.500000"
+                strokeLinejoin="round"
+                strokeLinecap="round"
             />
         </g>
     </svg>

@@ -1,6 +1,6 @@
 const Cart = () => {
     return (
-        <div className="p-8">
+        <div className="mt-[80px]">
             {/* Breadcrumb */}
             <div className="mb-6 text-sm">
                 <a href="#" className="text-gray-500">
