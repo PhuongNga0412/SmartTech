@@ -7,6 +7,10 @@ import "swiper/css/pagination";
 
 import "./styles.css";
 
+import BannerSlide1 from "@/assets/image/BannerSlide1.png";
+import BannerSlide2 from "@/assets/image/BannerSlide2.png";
+import BannerSlide3 from "@/assets/image/BannerSlide3.png";
+
 // import required modules
 import {
     Navigation,
@@ -15,24 +19,36 @@ import {
     Keyboard,
     Autoplay,
 } from "swiper/modules";
-import { Link } from "react-router-dom";
-import { logoApple } from "../../../icons";
+import { FaChevronRight } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 
-const Hero = () => {
+const Hero = ({ typeProduct }) => {
+    const navigate = useNavigate();
+    const handleNavigateType = (type) => {
+        navigate(`/product/${type}`, { state: type });
+    };
+
     return (
         <div className=" lg:flex lg:justify-between pt-10 pb-36">
-            <div className="pr-24 border-r-2">
+            <div className="min-w-[217px] pr-4 border-r-2">
                 <ul className="flex lg:flex-col gap-4 sm:flex-row sm:justify-center">
-                    <li className="font-semibold">
-                        <Link to="">Computers</Link>
-                    </li>
-                    <li className="font-semibold">Tablets & Cell Phones</li>
-                    <li className="font-semibold">Accessories</li>
-                    <li className="font-semibold">TV</li>
-                    <li className="font-semibold">Smartwatches</li>
-                    <li className="font-semibold">Mouse</li>
+                    {typeProduct?.map((type, index) => (
+                        <li
+                            key={index}
+                            className="font-semibold cursor-pointer"
+                        >
+                            <div
+                                onClick={() => handleNavigateType(type)}
+                                className="flex items-center justify-between"
+                            >
+                                <p>{type}</p>
+                                <FaChevronRight />
+                            </div>
+                        </li>
+                    ))}
                 </ul>
             </div>
+
             <div>
                 <Swiper
                     // cssMode={true}
@@ -44,15 +60,18 @@ const Hero = () => {
                         disableOnInteraction: false,
                     }}
                     modules={[Autoplay, Pagination, Mousewheel, Keyboard]}
-                    className="lg:w-[890px] lg:h-[350px] sm:container"
+                    className="lg:w-[890px]  sm:container"
                 >
                     <SwiperSlide>
-                        <img
-                            src="https://7beasts.com/wp-content/uploads/2020/07/the-best-lenovo-laptop-for-students.png"
-                            alt=""
-                        />
+                        <img src={BannerSlide1} alt="" />
                     </SwiperSlide>
                     <SwiperSlide>
+                        <img src={BannerSlide2} alt="" />
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <img src={BannerSlide3} alt="" />
+                    </SwiperSlide>
+                    {/* <SwiperSlide>
                         <div className="w-full flex items-center  min-h-screen bg-black text-white">
                             <div className="w-full p-16">
                                 <div className="flex items-center gap-6">
@@ -82,13 +101,7 @@ const Hero = () => {
                                 </div>
                             </div>
                         </div>
-                    </SwiperSlide>
-                    <SwiperSlide>
-                        <img
-                            src="https://www.macworld.com/wp-content/uploads/2023/01/apple-products-2018-100782368-orig.jpg?quality=50&strip=all"
-                            alt=""
-                        />
-                    </SwiperSlide>
+                    </SwiperSlide> */}
                 </Swiper>
             </div>
         </div>

@@ -172,7 +172,9 @@ export default function SideBar() {
                                         <span className="sr-only">
                                             Your profile
                                         </span>
-                                        <span aria-hidden="true">Tom Cook</span>
+                                        <span aria-hidden="true">
+                                            PhuongNga
+                                        </span>
                                     </a>
                                 </li>
                             </ul>

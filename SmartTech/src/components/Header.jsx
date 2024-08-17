@@ -49,7 +49,7 @@ const Header = () => {
     };
 
     return (
-        <header className="bg-white  ">
+        <header className="bg-white sticky top-0 z-10">
             <nav
                 aria-label="Global"
                 className="container max-w-[1170px] mx-auto flex items-center justify-between pt-10 pb-4"
@@ -79,6 +79,12 @@ const Header = () => {
                         className="font-semibold leading-6 text-gray-900"
                     >
                         Home
+                    </Link>
+                    <Link
+                        to="/product"
+                        className="font-semibold leading-6 text-gray-900"
+                    >
+                        Product
                     </Link>
                     <Link
                         to="/contact"

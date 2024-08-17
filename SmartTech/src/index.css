@@ -1,9 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-* {
-    box-sizing: border-box;
-}
 
 .group:hover .group-hover\:stroke-white path {
     stroke: white;
@@ -39,4 +36,16 @@ input:focus ~ label {
 .swiper-button-next,
 .swiper-button-prev {
     @apply !w-[46px] !h-[46px];
+}
+
+@layer utilities {
+    .custom-number-input::-webkit-outer-spin-button,
+    .custom-number-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .custom-number-input {
+        -moz-appearance: textfield;
+    }
 }

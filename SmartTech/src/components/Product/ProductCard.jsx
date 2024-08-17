@@ -1,10 +1,16 @@
 import { ProductCardHeartIcon, ProductCardViewIcon } from "@/icons";
+import { Link, useNavigate } from "react-router-dom";
 
 const ProductCard = ({ data }) => {
+    const navigate = useNavigate();
+    const handleDetailsProduct = (id) => {
+        navigate(`/detail/${id}`);
+    };
+
     return (
         <div>
             <div>
-                <div className="group relative border border-gray-300 rounded">
+                <div className="group relative border border-gray-300 rounded max-w-[270px]">
                     {data.discount && (
                         <span className="absolute top-3 left-3 bg-red-500 text-white text-xs rounded px-3 py-1">
                             - {data.discount}%
@@ -28,7 +34,7 @@ const ProductCard = ({ data }) => {
                         <img
                             src="https://i.pinimg.com/564x/82/39/18/823918e015243ab53be190ab33abd994.jpg"
                             alt="Product"
-                            className="w-full h-auto object-cover rounded"
+                            className="w-[270px] h-[250px] object-cover rounded"
                         />
                     )}
 
@@ -37,7 +43,12 @@ const ProductCard = ({ data }) => {
                     </button>
                 </div>
                 <div className="mt-4">
-                    <h3 className="font-medium text-base">{data.name}</h3>
+                    <Link
+                        to={`/detail/${data._id}`}
+                        className="max-w-[270px] font-medium text-base line-clamp-2 overflow-hidden min-h-12"
+                    >
+                        {data.name}
+                    </Link>
                     <div className="flex items-center space-x-2">
                         <span className="text-red-500 font-medium text-base">
                             {data.price.toLocaleString()} VND

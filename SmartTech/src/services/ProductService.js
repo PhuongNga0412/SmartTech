@@ -1,22 +1,33 @@
 import { axiosJWT } from "@/services/UserService";
 import axios from "axios";
 
-export const getAllProduct = async (search, limit) => {
+export const getAllProduct = async (search, limit, page) => {
     let res = {};
-    if (search?.length > 0) {
+    if (search && search?.length > 0) {
         res = await axios.get(
             `${
                 import.meta.env.VITE_API_URL_BACKEND
-            }/product/get-all?filter=name&filter=${search}&limit=${limit}`
+            }/product/get-all?filter=name&filter=${search}&limit=${limit}&page=${page}`
         );
     } else {
         res = await axios.get(
             `${
                 import.meta.env.VITE_API_URL_BACKEND
-            }/product/get-all?limit=${limit}`
+            }/product/get-all?limit=${limit}&page=${page}`
         );
     }
     return res.data;
+};
+
+export const getProductType = async (type) => {
+    if (type) {
+        const res = await axios.get(
+            `${
+                import.meta.env.VITE_API_URL_BACKEND
+            }/product/get-all?filter=type&filter=${type}`
+        );
+        return res.data;
+    }
 };
 
 export const createProduct = async (data) => {
@@ -55,6 +66,13 @@ export const deleteProduct = async (id, access_token) => {
                 token: `Bearer ${access_token}`,
             },
         }
+    );
+    return res.data;
+};
+
+export const getAllTypeProduct = async () => {
+    const res = await axios.get(
+        `${import.meta.env.VITE_API_URL_BACKEND}/product/get-all-type`
     );
     return res.data;
 };

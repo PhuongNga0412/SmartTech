@@ -17,7 +17,7 @@ const Category = () => {
             <h2 className="font-semibold text-4xl mt-5 mb-[60px]">
                 Browse By Category
             </h2>
-            <div className="flex justify-between">
+            <div className="grid sm:grid-cols-3 grid-cols-2 gap-4 md:flex md:justify-between">
                 <div className="flex flex-col justify-center items-center w-[170px] h-[145px] border-2 border-gray-400 rounded group hover:bg-red-500 hover:text-white">
                     <div className="hover:stroke-white">
                         {CategoryCellphone}

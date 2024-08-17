@@ -81,6 +81,11 @@ const Login = () => {
                                         value={email}
                                         onChange={handleOnchangeEmail}
                                     />
+                                    {data?.status === "ERR" && (
+                                        <div className="mt-0 italic text-red-500 ">
+                                            {data?.message}
+                                        </div>
+                                    )}
                                     <SignUpInputField
                                         label="Password"
                                         name="password"
@@ -93,10 +98,6 @@ const Login = () => {
 
                             <div className="mt-10">
                                 <div className="mt-6  grid-cols-2 gap-4 flex items-center">
-                                    {data?.status === "ERR" && (
-                                        <span>{data?.message}</span>
-                                    )}
-
                                     <button
                                         disabled={
                                             email.length === 0 ||

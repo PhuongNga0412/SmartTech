@@ -20,6 +20,7 @@ import ProductManagement from "@/pages/Admin/ProductManagement/ProductManagement
 import Dashboard from "@/pages/Admin/Dashboard/Dashboard";
 import Admin from "@/pages/Admin/Admin";
 import Products from "@/pages/Product/Products";
+import TypeProduct from "@/pages/TypeProduct/TypeProduct";
 
 // const adminLoader = () => {
 //     const { isAdmin } = useSelector((state) => state.user);
@@ -36,10 +37,6 @@ const router = createBrowserRouter([
         element: <MainLayout />,
         errorElement: <Error />,
         children: [
-            // {
-            //     path: "/products",
-            //     element: <Products />,
-            // },
             {
                 path: "/",
                 element: <Home />,
@@ -47,6 +44,10 @@ const router = createBrowserRouter([
             {
                 path: "/product",
                 element: <Products />,
+            },
+            {
+                path: "/product/:type",
+                element: <TypeProduct />,
             },
             {
                 path: "/contact",
@@ -73,7 +74,7 @@ const router = createBrowserRouter([
                 element: <CheckOUt />,
             },
             {
-                path: "/detail",
+                path: "/detail/:id",
                 element: <ProductDetail />,
             },
             {

@@ -9,9 +9,9 @@ import { HiChevronRight } from "react-icons/hi";
 import { HiChevronLeft } from "react-icons/hi";
 import { Semiclone } from "@/icons";
 import ProductCard from "@/components/Product/ProductCard";
+import { Loading } from "@/components/LoadingComponent/Loading";
 
-const FlashSale = (products) => {
-    console.log("sale", products);
+const FlashSale = ({ products, isLoading }) => {
     return (
         <div>
             <div className="flex items-center gap-4">
@@ -62,33 +62,33 @@ const FlashSale = (products) => {
             </div>
             {/* Products Sale */}
 
-            <div className="mt-10">
-                <Swiper
-                    slidesPerView={4}
-                    spaceBetween={30}
-                    navigation={{
-                        nextEl: ".swiper-button-next",
-                        prevEl: ".swiper-button-prev",
-                    }}
-                    modules={[FreeMode, Navigation]}
-                    className="mySwiper mt-10"
-                >
-                    {products?.products?.map(
-                        (item) =>
-                            item.discount && (
-                                <SwiperSlide
-                                    className="swiper-slide"
-                                    key={item._id}
-                                >
-                                    <ProductCard data={item} />
-                                </SwiperSlide>
-                            )
-                    )}
-                </Swiper>
-            </div>
-            <button className="block mx-auto mt-14 py-4 px-5 rounded bg-red-500 font-medium text-white">
-                View All Products
-            </button>
+            <Loading isLoading={isLoading}>
+                <div className="mt-10">
+                    <Swiper
+                        slidesPerView={4}
+                        spaceBetween={30}
+                        navigation={{
+                            nextEl: ".swiper-button-next",
+                            prevEl: ".swiper-button-prev",
+                        }}
+                        modules={[FreeMode, Navigation]}
+                        className="mySwiper mt-10"
+                    >
+                        {products?.map(
+                            (item) =>
+                                item.discount && (
+                                    <SwiperSlide
+                                        className="swiper-slide"
+                                        key={item._id}
+                                    >
+                                        <ProductCard data={item} />
+                                    </SwiperSlide>
+                                )
+                        )}
+                    </Swiper>
+                </div>
+            </Loading>
+
             <div className="h-[1px] my-16 bg-slate-300"></div>
         </div>
     );

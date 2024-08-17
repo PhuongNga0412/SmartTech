@@ -16,12 +16,6 @@ const Products = () => {
         const limit = context?.queryKey && context?.queryKey[1];
         const search = context?.queryKey && context?.queryKey[2];
         const res = await ProductService.getAllProduct(search, limit);
-        // if (search?.length > 0 || refSearch.current) {
-        //     setStateProduct(res?.data);
-        //     return [];
-        // } else {
-        //     return res;
-        // }
         return res;
     };
 
@@ -32,22 +26,7 @@ const Products = () => {
         retryDelay: 1000,
         placeholderData: keepPreviousData,
     });
-
-    // useEffect(() => {
-    //     if (refSearch.current) {
-    //         setPending(true);
-    //         fetchProductAll(searchDebounce);
-    //     }
-    //     refSearch.current = true;
-    //     setPending(false);
-    // }, [searchDebounce]);
-
-    // useEffect(() => {
-    //     if (products?.data?.length > 0) {
-    //         setStateProduct(products?.data);
-    //     }
-    // }, [products]);
-
+    console.log(products);
     return (
         <Loading className="m-auto" isLoading={isLoading || pending}>
             <div className="flex flex-wrap gap-[28px] mt-[79px]">

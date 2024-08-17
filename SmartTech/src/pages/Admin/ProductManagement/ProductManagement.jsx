@@ -11,12 +11,25 @@ import InputComponent from "@/components/InputComponent/InputComponent";
 import { toast } from "react-toastify";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import ModalConfirmDelete from "@/components/ModalConfirmDelete/ModalConfirmDelete";
+import { renderOptions } from "@/utils";
+import { Loading } from "@/components/LoadingComponent/Loading";
+import ReactPaginate from "react-paginate";
 
 export default function UserManagement() {
     const [openModal, setOpenModal] = useState(false);
     const [openModalEdit, setOpenModalEdit] = useState(false);
     const [rowSelected, setRowSelected] = useState("");
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+    const [displayProduct, setDisplayProduct] = useState([]);
+    const [typeSelect, setTypeSelect] = useState("");
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 8;
+    const search = "";
+    const [paginate, setPaginate] = useState({
+        limit: 8,
+        page: 0,
+        total: 1,
+    });
 
     const onCloseModal = () => {
         setOpenModal(false);
@@ -25,7 +38,7 @@ export default function UserManagement() {
 
     const [stateProduct, setStateProduct] = useState({
         name: "",
-        image: "",
+        image: [],
         type: "",
         price: "",
         countInStock: "",
@@ -33,6 +46,7 @@ export default function UserManagement() {
         description: "",
         discount: "",
         basePrice: "",
+        newType: "",
     });
     const [stateProductDetails, setStateProductDetails] = useState({
         name: "",
@@ -60,11 +74,17 @@ export default function UserManagement() {
     };
 
     const handleChangeAvatar = async (event) => {
-        const file = event.target.files[0];
-        const base64 = await convertBase64(file);
+        const files = event.target.files;
+        const imageUrls = [];
+
+        for (const file of files) {
+            const base64 = await convertBase64(file);
+            imageUrls.push(base64);
+        }
+
         setStateProduct({
             ...stateProduct,
-            image: base64,
+            image: imageUrls,
         });
     };
     const handleChangeProductDetails = async (event) => {
@@ -145,7 +165,7 @@ export default function UserManagement() {
             toast.success("create ook");
             setStateProduct({
                 name: "",
-                image: "",
+                image: [],
                 type: "",
                 price: "",
                 countInStock: "",
@@ -165,7 +185,7 @@ export default function UserManagement() {
             toast.success("Update ook");
             setStateProductDetails({
                 name: "",
-                image: "",
+                image: [],
                 type: "",
                 price: "",
                 countInStock: "",
@@ -178,7 +198,7 @@ export default function UserManagement() {
         } else if (isErrorUpdate) {
             setStateProductDetails({
                 name: "",
-                image: "",
+                image: [],
                 type: "",
                 price: "",
                 countInStock: "",
@@ -202,22 +222,57 @@ export default function UserManagement() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        mutation.mutate(stateProduct, {
+        const params = {
+            name: stateProduct.name,
+            image: stateProduct.image,
+            type:
+                stateProduct.type === "add_type"
+                    ? stateProduct.newType
+                    : stateProduct.type,
+            price: stateProduct.price,
+            countInStock: stateProduct.countInStock,
+            rating: stateProduct.rating,
+            description: stateProduct.description,
+            discount: stateProduct.discount,
+            basePrice: stateProduct.basePrice,
+        };
+        mutation.mutate(params, {
             onSettled: () => {
                 queryProduct.refetch();
             },
         });
     };
 
-    const getAllProduct = async () => {
-        const res = await ProductService.getAllProduct();
+    const getAllProduct = async (context) => {
+        const search = context?.queryKey && context?.queryKey[1];
+        const limit = context?.queryKey && context?.queryKey[2];
+        const page = context?.queryKey && context?.queryKey[3];
+        const res = await ProductService.getAllProduct(search, limit, page);
+
+        if (res?.status == "OK") {
+            setPaginate({ ...paginate, total: res?.totalPage });
+        }
+
         return res;
     };
+
     const queryProduct = useQuery({
-        queryKey: ["products"],
+        queryKey: ["products", search, paginate.limit, paginate.page],
         queryFn: getAllProduct,
     });
-    const { data: products } = queryProduct;
+    const { data: products, isLoading } = queryProduct;
+
+    const fetchAllTypeProduct = async () => {
+        const res = await ProductService.getAllTypeProduct();
+        return res;
+        // if (res?.status === "OK") {
+        //     setTypeProduct(res?.data);
+        // }
+    };
+    const typeProduct = useQuery({
+        queryKey: ["type-product"],
+        queryFn: fetchAllTypeProduct,
+    });
 
     const fetchGetDetailsProduct = async (rowSelected) => {
         const res = await ProductService.getDetailsProduct(rowSelected);
@@ -281,6 +336,25 @@ export default function UserManagement() {
         );
     };
 
+    const handleChangeSelect = (e) => {
+        const value = e.target.value;
+
+        setStateProduct({
+            ...stateProduct,
+            type: value,
+        });
+    };
+
+    const handlePageClick = (data) => {
+        setPaginate({ ...paginate, page: data.selected });
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
+
+    console.log(paginate);
+
     return (
         <div className="sm:px-6 lg:pr-[70px]">
             <div className="sm:flex sm:items-center">
@@ -299,105 +373,135 @@ export default function UserManagement() {
                     </button>
                 </div>
             </div>
-            <div className="mt-8 flow-root">
-                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                        <table className="min-w-full divide-y divide-gray-300">
-                            <thead>
-                                <tr>
-                                    <th
-                                        scope="col"
-                                        className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-                                    >
-                                        Product Name
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    >
-                                        Type
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    >
-                                        Price
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    >
-                                        Count In Stock
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="relative py-3.5 pl-3 pr-4 sm:pr-0"
-                                    >
-                                        <span className="sr-only">Edit</span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200 bg-white">
-                                {products?.data?.map((item) => (
-                                    <tr
-                                        key={item.name}
-                                        onClick={() => setRowSelected(item._id)}
-                                    >
-                                        <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
-                                            <div className="flex items-center">
-                                                <div className="h-11 w-11 flex-shrink-0">
-                                                    <img
-                                                        alt=""
-                                                        src={item.image}
-                                                        className="h-11 w-11 rounded object-cover"
-                                                    />
-                                                </div>
-                                                <div className="ml-4">
-                                                    <div className="font-medium text-gray-900">
-                                                        {item.name}
+            <Loading isLoading={isLoading}>
+                <div className="mt-8 flow-root">
+                    <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                        <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                            <table className="min-w-full divide-y divide-gray-300">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            scope="col"
+                                            className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                                        >
+                                            Product Name
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                        >
+                                            Type
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                        >
+                                            Price
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                        >
+                                            Count In Stock
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="relative py-3.5 pl-3 pr-4 sm:pr-0"
+                                        >
+                                            <span className="sr-only">
+                                                Edit
+                                            </span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 bg-white">
+                                    {products?.data?.map((item) => (
+                                        <tr
+                                            key={item.name}
+                                            onClick={() =>
+                                                setRowSelected(item._id)
+                                            }
+                                        >
+                                            <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                                <div className="flex items-center">
+                                                    <div className="h-11 w-11 flex-shrink-0">
+                                                        <img
+                                                            alt=""
+                                                            src={
+                                                                item.image?.[0]
+                                                            }
+                                                            className="h-11 w-11 rounded object-cover"
+                                                        />
                                                     </div>
-                                                    {/* <div className="mt-1 text-gray-500">
+                                                    <div className="ml-4">
+                                                        <div className="font-medium text-gray-900">
+                                                            {item.name}
+                                                        </div>
+                                                        {/* <div className="mt-1 text-gray-500">
                                                         {item.type}
                                                     </div> */}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                            <div className="text-gray-900">
-                                                {item.type}
-                                            </div>
-                                        </td>
-                                        <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                            <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                                                {item.price}
-                                            </span>
-                                        </td>
-                                        <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                            {item.countInStock}
-                                        </td>
-                                        <td className="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                                            <button
-                                                onClick={handleDetailProduct}
-                                                className="text-indigo-600 hover:text-indigo-900 mr-4"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    setIsModalOpenDelete(true)
-                                                }
-                                                className="text-red-600 hover:text-red-900"
-                                            >
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                            </td>
+                                            <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                                <div className="text-gray-900">
+                                                    {item.type}
+                                                </div>
+                                            </td>
+                                            <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                                <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                                    {item.price}
+                                                </span>
+                                            </td>
+                                            <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                                {item.countInStock}
+                                            </td>
+                                            <td className="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                                <button
+                                                    onClick={
+                                                        handleDetailProduct
+                                                    }
+                                                    className="text-indigo-600 hover:text-indigo-900 mr-4"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        setIsModalOpenDelete(
+                                                            true
+                                                        )
+                                                    }
+                                                    className="text-red-600 hover:text-red-900"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            <div className="flex justify-center">
+                                <ReactPaginate
+                                    previousLabel={"< previous"}
+                                    nextLabel={"next >"}
+                                    breakLabel="..."
+                                    pageCount={paginate?.total}
+                                    pageRangeDisplayed={3}
+                                    forcePage={paginate?.page}
+                                    onPageChange={handlePageClick}
+                                    activeClassName="text-red-700 font-bold dark:text-red-700 "
+                                    containerClassName="inline-flex -space-x-px text-sm"
+                                    pageLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                                    previousLinkClassName="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                                    nextLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                                    breakLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                                    activeLinkClassName="flex items-center justify-center px-3 h-8 text-red-700 font-semibold border-gray-300 bg-red-100 dark:text-red-700 "
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </Loading>
 
             {/* -------------------------------create------------------------------- */}
             <Dialog
@@ -450,11 +554,37 @@ export default function UserManagement() {
                                             >
                                                 type
                                             </label>
-                                            <InputComponent
+                                            <select
+                                                className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                                id="department"
                                                 value={stateProduct.type}
-                                                onChange={handleOnChange}
-                                                name="type"
-                                            />
+                                                onChange={handleChangeSelect}
+                                            >
+                                                {renderOptions(
+                                                    typeProduct?.data?.data
+                                                )?.map((item) => (
+                                                    <option
+                                                        key={item}
+                                                        value={item.value}
+                                                    >
+                                                        {item.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {stateProduct.type ===
+                                                "add_type" && (
+                                                <div className="mt-6">
+                                                    <InputComponent
+                                                        value={
+                                                            stateProduct.newType
+                                                        }
+                                                        onChange={
+                                                            handleOnChange
+                                                        }
+                                                        name="newType"
+                                                    />
+                                                </div>
+                                            )}
                                             {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
                             {message.address}
                         </p> */}
@@ -504,10 +634,17 @@ export default function UserManagement() {
                                             >
                                                 description
                                             </label>
-                                            <InputComponent
+                                            {/* <InputComponent
                                                 value={stateProduct.description}
                                                 onChange={handleOnChange}
                                                 name="description"
+                                            /> */}
+                                            <textarea
+                                                value={stateProduct.description}
+                                                onChange={handleOnChange}
+                                                name="description"
+                                                cols={50}
+                                                rows={7}
                                             />
                                             {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
                             {message.address}
@@ -584,19 +721,23 @@ export default function UserManagement() {
                                                 aria-describedby="user_avatar_help"
                                                 id="user_avatar"
                                                 type="file"
+                                                multiple
                                                 onChange={(event) => {
                                                     handleChangeAvatar(event);
                                                 }}
                                             />
                                         </div>
                                     </div>
-                                    <div>
-                                        {stateProduct?.image && (
-                                            <img
-                                                className="mt-4 w-20 h-20 object-cover"
-                                                src={stateProduct?.image}
-                                                alt=""
-                                            />
+                                    <div className="flex gap-4">
+                                        {stateProduct?.image?.map(
+                                            (image, index) => (
+                                                <img
+                                                    key={index}
+                                                    className="mt-4 w-20 h-20 object-cover"
+                                                    src={image}
+                                                    alt=""
+                                                />
+                                            )
                                         )}
                                     </div>
 
