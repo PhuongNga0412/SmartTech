@@ -11,16 +11,20 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3002;
 
+const cloudinary = require("./config/cloudinary");
+const paypalRoutes = require("./routes/PaypalRouter");
+
 app.use(
     cors({
         origin: "http://localhost:5173",
     })
 );
 app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 routes(app);
+app.use(paypalRoutes);
 
 mongoose
     .connect(`${process.env.MONGO_DB}`)

@@ -14,17 +14,6 @@ import { updateUser } from "@/redux/slides/userSlide";
 
 const MainLayout = () => {
     const dispatch = useDispatch();
-    // useEffect(() => {
-    //     fetchApi();
-    // }, []);
-    // const fetchApi = async () => {
-    //     const res = await axios.get(
-    //         `${import.meta.env.VITE_API_URL_BACKEND}/product/get-all`
-    //     );
-    //     return res.data;
-    // };
-
-    // const query = useQuery({ queryKey: ["todos"], queryFn: fetchApi });
 
     useEffect(() => {
         const { storageData, decoded } = handleDecoded();
@@ -61,7 +50,6 @@ const MainLayout = () => {
     const handleGetDetailsUser = async (id, token) => {
         const res = await UserService.getDetailsUser(id, token);
         dispatch(updateUser({ ...res?.data, access_token: token }));
-        console.log("res - ", res);
     };
 
     return (
@@ -72,8 +60,8 @@ const MainLayout = () => {
             </div>
             <Footer />
             <ToastContainer
-                position="top-right"
-                autoClose={5000}
+                position="top-center"
+                autoClose={2000}
                 hideProgressBar={false}
                 newestOnTop={false}
                 closeOnClick
@@ -82,10 +70,8 @@ const MainLayout = () => {
                 draggable
                 pauseOnHover
                 theme="light"
-                // transition: Bounce,
+                transition:Bounce
             />
-
-            <ToastContainer />
         </div>
     );
 };

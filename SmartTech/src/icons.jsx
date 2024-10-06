@@ -617,6 +617,28 @@ export const ProductCardHeartIcon = (
     </svg>
 );
 
+export const ProductCardHeartIconFill = (
+    <svg
+        width="17.500000"
+        height="15.500000"
+        viewBox="0 0 17.5 15.5"
+        fill="#f0524f"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+    >
+        <desc>Created with Pixso.</desc>
+        <defs />
+        <path
+            id="Vector"
+            d="M0.75 4.63C0.75 6.36 1.45 10.48 8.34 14.63C8.46 14.71 8.6 14.75 8.75 14.75C8.89 14.75 9.03 14.71 9.15 14.63C16.04 10.48 16.75 6.36 16.75 4.63C16.75 2.48 14.95 0.75 12.75 0.75C10.54 0.75 8.75 3.1 8.75 3.1C8.75 3.1 6.95 0.75 4.75 0.75C2.54 0.75 0.75 2.48 0.75 4.63Z"
+            stroke="#f0524f"
+            strokeOpacity="1.000000"
+            strokeWidth="1.500000"
+            strokeLinejoin="round"
+        />
+    </svg>
+);
+
 export const ProductCardViewIcon = (
     <svg
         width="20.725098"

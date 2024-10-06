@@ -15,18 +15,25 @@ import {
     XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const navigation = [
-    { name: "Dashboard", link: "", icon: HomeIcon, current: true },
+    // { name: "Dashboard", link: "", icon: HomeIcon, current: true },
     {
-        name: "User Management",
-        link: "user-manager",
+        name: "Quản lý người dùng",
+        link: "",
         icon: UsersIcon,
+        current: true,
+    },
+    {
+        name: "Quản lý sản phẩm",
+        link: "product-manager",
+        icon: FolderIcon,
         current: false,
     },
     {
-        name: "Product Management",
-        link: "product-manager",
+        name: "Quản lý đơn hàng",
+        link: "order-manager",
         icon: FolderIcon,
         current: false,
     },
@@ -37,7 +44,9 @@ function classNames(...classes) {
 }
 
 export default function SideBar() {
+    const user = useSelector((state) => state.user);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [current, setCurrent] = useState("User Management");
 
     return (
         <>
@@ -96,8 +105,17 @@ export default function SideBar() {
                                                     <li key={item.name}>
                                                         <Link
                                                             to={item.link}
+                                                            onClick={() => {
+                                                                setCurrent(
+                                                                    item.name
+                                                                );
+                                                                setSidebarOpen(
+                                                                    false
+                                                                );
+                                                            }}
                                                             className={classNames(
-                                                                item.current
+                                                                current ===
+                                                                    item.name
                                                                     ? "bg-gray-800 text-white"
                                                                     : "text-gray-400 hover:bg-gray-800 hover:text-white",
                                                                 "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
@@ -141,8 +159,11 @@ export default function SideBar() {
                                             <li key={item.name}>
                                                 <Link
                                                     to={item.link}
+                                                    onClick={() =>
+                                                        setCurrent(item.name)
+                                                    }
                                                     className={classNames(
-                                                        item.current
+                                                        current === item.name
                                                             ? "bg-gray-800 text-white"
                                                             : "text-gray-400 hover:bg-gray-800 hover:text-white",
                                                         "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
@@ -160,22 +181,16 @@ export default function SideBar() {
                                 </li>
 
                                 <li className="-mx-6 mt-auto">
-                                    <a
-                                        href="#"
-                                        className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800"
-                                    >
+                                    <div className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800">
                                         <img
                                             alt=""
-                                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                            src={user?.avatar}
                                             className="h-8 w-8 rounded-full bg-gray-800"
                                         />
-                                        <span className="sr-only">
-                                            Your profile
-                                        </span>
                                         <span aria-hidden="true">
-                                            PhuongNga
+                                            {user?.name}
                                         </span>
-                                    </a>
+                                    </div>
                                 </li>
                             </ul>
                         </nav>
@@ -194,14 +209,13 @@ export default function SideBar() {
                     <div className="flex-1 text-sm font-semibold leading-6 text-white">
                         Dashboard
                     </div>
-                    <a href="#">
-                        <span className="sr-only">Your profile</span>
+                    <div>
                         <img
                             alt=""
-                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                            src={user?.avatar}
                             className="h-8 w-8 rounded-full bg-gray-800"
                         />
-                    </a>
+                    </div>
                 </div>
 
                 <main className="py-10 lg:pl-72">

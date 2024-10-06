@@ -24,7 +24,7 @@ const ProductMonth = ({ products, isLoading }) => {
                 onClick={() => navigate("/product")}
                 className="block mx-auto mt-14 py-4 px-5 rounded bg-red-500 font-medium text-white"
             >
-                View All Products
+                Xem tất cả sản phẩm
             </button>
         </div>
     );

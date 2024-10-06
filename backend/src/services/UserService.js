@@ -10,9 +10,9 @@ const createUser = (newUser) => {
                 email: email,
             });
             if (checkUser !== null) {
-                resolve({
+                return reject({
                     status: "ERR",
-                    message: "the email already",
+                    message: "Tài khoản email đã tồn tại",
                 });
             }
             const hash = bcrypt.hashSync(password, 10);
@@ -43,9 +43,9 @@ const loginUser = (newUser) => {
                 email: email,
             });
             if (checkUser === null) {
-                resolve({
+                return reject({
                     status: "ERR",
-                    message: "the user is not defined",
+                    message: "Email không tồn tại",
                 });
             }
             const comparePassword = bcrypt.compareSync(
@@ -54,9 +54,9 @@ const loginUser = (newUser) => {
             );
 
             if (!comparePassword) {
-                resolve({
-                    status: "OK",
-                    message: "the password or user incorrect",
+                return reject({
+                    status: "ERR",
+                    message: "Mật khẩu không chính xác",
                 });
             }
 
@@ -88,8 +88,6 @@ const updateUser = (id, data) => {
             const checkUser = await User.findOne({
                 _id: id,
             });
-            console.log("id: ", id);
-            console.log("checkUser: ", checkUser);
             if (checkUser === null) {
                 resolve({
                     status: "OkK",
@@ -100,7 +98,6 @@ const updateUser = (id, data) => {
             const updatedUser = await User.findByIdAndUpdate(id, data, {
                 new: true,
             });
-            console.log("updatedUser =>>> ", updatedUser);
 
             resolve({
                 status: "OK",
@@ -140,15 +137,27 @@ const deleteUser = (id) => {
     });
 };
 
-const getAllUser = () => {
+const getAllUser = (limit, page) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allUser = await User.find();
+            const totalUser = await User.countDocuments();
+            let allUser = [];
+
+            if (!limit) {
+                allUser = await User.find();
+            } else {
+                allUser = await User.find()
+                    .limit(limit)
+                    .skip(page * limit);
+            }
 
             resolve({
                 status: "OK",
                 message: "GET ALL USER SUCCESS",
                 data: allUser,
+                total: totalUser,
+                pageCurrentUser: Number(page + 1),
+                totalPageUser: Math.ceil(totalUser / limit),
             });
         } catch (e) {
             reject(e);

@@ -6,7 +6,7 @@ const SignUpInputField = (props) => {
     };
 
     return (
-        <div className="relative z-0 w-full mb-8">
+        <div className="relative z-0 w-full mb-3">
             <input
                 {...rests}
                 id={name}

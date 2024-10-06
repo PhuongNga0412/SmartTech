@@ -2,16 +2,25 @@ import SignUpInputField from "@/pages/SignUp/SignUpInputField";
 import { useEffect, useState } from "react";
 import * as UserService from "@/services/UserService";
 import { useMutationHooks } from "@/hook/useMutationHooks";
-import { Loading } from "@/components/LoadingComponent/Loading";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { updateUser } from "@/redux/slides/userSlide";
+import LoadingComponent from "@/components/LoadingComponent/LoadingComponent";
 
 const Login = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState({
+        email: "",
+        password: "",
+    });
+    const msgErr = {
+        email: "",
+        password: "",
+    };
     const dispatch = useDispatch();
 
     const mutation = useMutationHooks((data) => UserService.loginUser(data));
@@ -19,7 +28,11 @@ const Login = () => {
 
     useEffect(() => {
         if (isSuccess && data?.status !== "ERR") {
-            navigate("/");
+            if (location?.state) {
+                navigate(location?.state);
+            } else {
+                navigate("/");
+            }
             localStorage.setItem(
                 "access_token",
                 JSON.stringify(data?.access_token)
@@ -37,20 +50,64 @@ const Login = () => {
     const handleGetDetailsUser = async (id, token) => {
         const res = await UserService.getDetailsUser(id, token);
         dispatch(updateUser({ ...res?.data, access_token: token }));
-        console.log("res - ", res);
     };
 
     const handleOnchangeEmail = (value) => {
         setEmail(value);
+        setErrorMessage({ ...errorMessage, email: "" });
     };
     const handleOnchangePassword = (value) => {
         setPassword(value);
+        setErrorMessage({ ...errorMessage, password: "" });
     };
     const handleSignIn = () => {
-        mutation.mutate({
-            email,
-            password,
+        const emailRegex =
+            /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+        if (!email) {
+            msgErr.email = "Vui lòng nhập email";
+        } else if (!emailRegex.test(email)) {
+            msgErr.email = "Email không đúng định dạng";
+        }
+        if (!password) {
+            msgErr.password = "Vui lòng nhập password";
+        }
+
+        setErrorMessage({
+            ...errorMessage,
+            email: msgErr.email,
+            password: msgErr.password,
         });
+
+        if (!msgErr.email && !msgErr.password) {
+            mutation.mutate(
+                {
+                    email,
+                    password,
+                },
+                {
+                    onError: (error) => {
+                        console.log(error);
+                        // Xử lý lỗi khi đăng nhập không thành công
+                        if (error.response) {
+                            // Giả sử backend trả về message trong response
+                            const errorMsg =
+                                error.response.data.message.message; // Hoặc đường dẫn phù hợp
+                            setErrorMessage({
+                                ...errorMessage,
+                                email: errorMsg.includes("Email không tồn tại")
+                                    ? "Email không tồn tại"
+                                    : "",
+                                password: errorMsg.includes(
+                                    "Mật khẩu không chính xác"
+                                )
+                                    ? "Mật khẩu không chính xác"
+                                    : "",
+                            });
+                        }
+                    },
+                }
+            );
+        }
     };
 
     return (
@@ -60,10 +117,10 @@ const Login = () => {
                     <div className="mx-auto w-full max-w-sm lg:w-96">
                         <div>
                             <h2 className="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                                Log in to Exclusive
+                                Đăng nhập vào tài khoản
                             </h2>
                             <p className="mt-2  leading-6 text-gray-500">
-                                Enter your details below
+                                Nhập thông tin chi tiết của bạn dưới đây
                             </p>
                         </div>
 
@@ -75,17 +132,16 @@ const Login = () => {
                                     className="space-y-6"
                                 >
                                     <SignUpInputField
-                                        label="Email or Phone Number"
+                                        label="Email"
                                         name="email"
                                         type="email"
                                         value={email}
                                         onChange={handleOnchangeEmail}
                                     />
-                                    {data?.status === "ERR" && (
-                                        <div className="mt-0 italic text-red-500 ">
-                                            {data?.message}
-                                        </div>
-                                    )}
+                                    <div className="text-sm text-red-600">
+                                        {errorMessage.email}
+                                    </div>
+
                                     <SignUpInputField
                                         label="Password"
                                         name="password"
@@ -93,31 +149,38 @@ const Login = () => {
                                         value={password}
                                         onChange={handleOnchangePassword}
                                     />
+                                    <div className="text-sm text-red-600">
+                                        {errorMessage.password}
+                                    </div>
                                 </form>
                             </div>
 
                             <div className="mt-10">
-                                <div className="mt-6  grid-cols-2 gap-4 flex items-center">
+                                <div className="mt-6 grid-cols-2 gap-4 flex items-center">
                                     <button
-                                        disabled={
-                                            email.length === 0 ||
-                                            password.length === 0 ||
-                                            isPending
-                                        }
+                                        // disabled={
+                                        //     email.length === 0 ||
+                                        //     password.length === 0 ||
+                                        //     isPending
+                                        // }
                                         onClick={handleSignIn}
                                         className="flex w-full items-center justify-center gap-3 rounded-md bg-red-500 px-3 py-4  font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-red-400 focus-visible:ring-transparent"
                                     >
-                                        {isPending ? <Loading /> : "Log In"}
+                                        {isPending ? (
+                                            <LoadingComponent />
+                                        ) : (
+                                            "Đăng nhập"
+                                        )}
                                     </button>
 
-                                    <div className="leading-6">
+                                    {/* <div className="leading-6">
                                         <a
                                             href="#"
                                             className="font-semibold text-red-500 hover:text-red-400"
                                         >
                                             Forgot password?
                                         </a>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>

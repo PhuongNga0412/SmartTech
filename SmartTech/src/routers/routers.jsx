@@ -8,7 +8,6 @@ import Error from "@/pages/Error/Error";
 import Contact from "@/pages/Contact/Contact";
 import About from "@/pages/About/About";
 import Cart from "@/pages/Cart/Cart";
-import CheckOUt from "@/pages/CheckOut/CheckOut";
 import Home from "@/pages/Home/Home";
 import Account from "@/pages/Account/Account";
 import Wishlist from "@/pages/Wishlist/Wishlist";
@@ -21,15 +20,11 @@ import Dashboard from "@/pages/Admin/Dashboard/Dashboard";
 import Admin from "@/pages/Admin/Admin";
 import Products from "@/pages/Product/Products";
 import TypeProduct from "@/pages/TypeProduct/TypeProduct";
-
-// const adminLoader = () => {
-//     const { isAdmin } = useSelector((state) => state.user);
-//     console.log(isAdmin);
-//     if (!isAdmin) {
-//         return redirect("/login");
-//     }
-//     return null;
-// };
+import Payment from "@/pages/Payment/Payment";
+import OrderSuccess from "@/pages/OrderSuccess/OrderSuccess";
+import MyOrder from "@/pages/MyOrder/MyOrder";
+import AdminRoute from "@/middleware/AdminRoute";
+import OrderManagement from "@/pages/Admin/OrderManagement/OrderManagement";
 
 const router = createBrowserRouter([
     {
@@ -70,8 +65,16 @@ const router = createBrowserRouter([
                 element: <Account />,
             },
             {
-                path: "/checkout",
-                element: <CheckOUt />,
+                path: "/payment",
+                element: <Payment />,
+            },
+            {
+                path: "/order-success",
+                element: <OrderSuccess />,
+            },
+            {
+                path: "/my-order",
+                element: <MyOrder />,
             },
             {
                 path: "/detail/:id",
@@ -89,29 +92,29 @@ const router = createBrowserRouter([
     },
     {
         path: "/system/admin",
-        element: <Admin />,
-        loader: async () => {
-            const isAdmin = await getUserAdminStatus();
-            console.log(isAdmin);
-            if (!isAdmin) {
-                console.log("khong vao duoc");
-                // return redirect("/login");
-                return <div>khong vao duoc</div>;
-            }
-            return json({});
-        },
+        element: (
+            <AdminRoute>
+                <Admin />
+            </AdminRoute>
+        ),
+
         children: [
+            // {
+            //     index: true,
+            //     element: <Dashboard />,
+            // },
             {
                 index: true,
-                element: <Dashboard />,
-            },
-            {
-                path: "user-manager",
+                // path: "user-manager",
                 element: <UserManagement />,
             },
             {
                 path: "product-manager",
                 element: <ProductManagement />,
+            },
+            {
+                path: "order-manager",
+                element: <OrderManagement />,
             },
         ],
     },

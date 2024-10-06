@@ -39,7 +39,7 @@ const Home = () => {
             <div>
                 <Hero typeProduct={typeProduct} />
                 <FlashSale isLoading={isLoading} products={products?.data} />
-                <Category />
+                <Category typeProduct={typeProduct} />
                 <ProductMonth isLoading={isLoading} products={products?.data} />
                 <PromoBanner />
                 <NewArrival />

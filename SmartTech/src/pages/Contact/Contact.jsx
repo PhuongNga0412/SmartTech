@@ -195,7 +195,7 @@ const Contact = () => {
                             <p className="mt-6 mb-4 text-sm">
                                 We are available 24/7, 7 days a week.
                             </p>
-                            <p className="text-sm">Phone: +8801611112222</p>
+                            <p className="text-sm">Phone: 0983337723</p>
                         </div>
                         <div className="h-[1px] bg-black my-8"></div>
                         <div>
@@ -211,10 +211,10 @@ const Contact = () => {
                                     within 24 hours.
                                 </p>
                                 <p className="text-sm">
-                                    Emails: customer@exclusive.com
+                                    Emails: lamn19771@gmail.com
                                 </p>
                                 <p className="text-sm">
-                                    Emails: support@exclusive.com
+                                    Emails: pg.nga0412@gmail.com
                                 </p>
                             </div>
                         </div>

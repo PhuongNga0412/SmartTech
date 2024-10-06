@@ -6,8 +6,9 @@ import {
     CategoryHeadphone,
     CategorySmartwatch,
 } from "@/icons";
+import { Link } from "react-router-dom";
 
-const Category = () => {
+const Category = ({ typeProduct }) => {
     return (
         <div>
             <div className="flex items-center gap-4">
@@ -18,12 +19,15 @@ const Category = () => {
                 Browse By Category
             </h2>
             <div className="grid sm:grid-cols-3 grid-cols-2 gap-4 md:flex md:justify-between">
-                <div className="flex flex-col justify-center items-center w-[170px] h-[145px] border-2 border-gray-400 rounded group hover:bg-red-500 hover:text-white">
+                <Link
+                    to="/product/Smartphone"
+                    className="flex flex-col justify-center items-center w-[170px] h-[145px] border-2 border-gray-400 rounded group hover:bg-red-500 hover:text-white"
+                >
                     <div className="hover:stroke-white">
                         {CategoryCellphone}
                     </div>
                     <p className="mt-4 font-medium">Phones</p>
-                </div>
+                </Link>
 
                 <div className="flex flex-col justify-center items-center w-[170px] h-[145px] border-2 border-gray-400 rounded group hover:bg-red-500 hover:text-white">
                     <div className="hover:stroke-white">{CategoryComputer}</div>

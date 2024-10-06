@@ -14,16 +14,18 @@ import ModalConfirmDelete from "@/components/ModalConfirmDelete/ModalConfirmDele
 import { renderOptions } from "@/utils";
 import { Loading } from "@/components/LoadingComponent/Loading";
 import ReactPaginate from "react-paginate";
+import {
+    CLOUDINARY_UPLOAD_PRESET,
+    CLOUDINARY_UPLOAD_URL,
+} from "@/services/ImageService";
+import axios from "axios";
 
-export default function UserManagement() {
+export default function ProductManagement() {
     const [openModal, setOpenModal] = useState(false);
     const [openModalEdit, setOpenModalEdit] = useState(false);
     const [rowSelected, setRowSelected] = useState("");
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
-    const [displayProduct, setDisplayProduct] = useState([]);
-    const [typeSelect, setTypeSelect] = useState("");
-    const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 8;
+
     const search = "";
     const [paginate, setPaginate] = useState({
         limit: 8,
@@ -48,9 +50,27 @@ export default function UserManagement() {
         basePrice: "",
         newType: "",
     });
+    const [errorMessage, setErrorMessage] = useState({
+        name: "",
+        image: [],
+        type: "",
+        countInStock: "",
+        basePrice: "",
+        rating: "",
+        newType: "",
+    });
+    const msgErr = {
+        name: "",
+        image: [],
+        type: "",
+        countInStock: "",
+        basePrice: "",
+        rating: "",
+        newType: "",
+    };
     const [stateProductDetails, setStateProductDetails] = useState({
         name: "",
-        image: "",
+        image: [],
         type: "",
         price: "",
         countInStock: "",
@@ -65,6 +85,7 @@ export default function UserManagement() {
             ...stateProduct,
             [e.target.name]: e.target.value,
         });
+        setErrorMessage({ ...errorMessage, [e.target.name]: "" });
     };
     const handleOnChangeDetails = (e) => {
         setStateProductDetails({
@@ -73,40 +94,61 @@ export default function UserManagement() {
         });
     };
 
+    const [imageUrls, setImageUrls] = useState([]);
+
     const handleChangeAvatar = async (event) => {
         const files = event.target.files;
-        const imageUrls = [];
+        const newImageUrls = [];
 
         for (const file of files) {
-            const base64 = await convertBase64(file);
-            imageUrls.push(base64);
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+            try {
+                const response = await axios.post(
+                    CLOUDINARY_UPLOAD_URL,
+                    formData
+                );
+                newImageUrls.push(response.data.secure_url); // Lưu URL trả về từ Cloudinary
+            } catch (error) {
+                console.error("Error uploading file:", error);
+            }
         }
+
+        setImageUrls(newImageUrls);
 
         setStateProduct({
             ...stateProduct,
-            image: imageUrls,
-        });
-    };
-    const handleChangeProductDetails = async (event) => {
-        const file = event.target.files[0];
-        const base64 = await convertBase64(file);
-        setStateProductDetails({
-            ...stateProductDetails,
-            image: base64,
+            image: newImageUrls,
         });
     };
 
-    const convertBase64 = (file) => {
-        return new Promise((resolve, reject) => {
-            const fileReader = new FileReader();
-            console.log(fileReader);
-            fileReader.readAsDataURL(file);
-            fileReader.onload = () => {
-                resolve(fileReader.result);
-            };
-            fileReader.onerror = (error) => {
-                reject(error);
-            };
+    const handleChangeProductDetails = async (event) => {
+        const files = event.target.files;
+        const newImageUrls = [];
+
+        for (const file of files) {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+            try {
+                const response = await axios.post(
+                    CLOUDINARY_UPLOAD_URL,
+                    formData
+                );
+                newImageUrls.push(response.data.secure_url); // Lưu URL trả về từ Cloudinary
+            } catch (error) {
+                console.error("Error uploading file:", error);
+            }
+        }
+
+        setImageUrls(newImageUrls);
+
+        setStateProductDetails({
+            ...stateProductDetails,
+            image: newImageUrls,
         });
     };
 
@@ -138,7 +180,6 @@ export default function UserManagement() {
     const { data, isSuccess, isError } = mutation;
 
     const mutationUpdate = useMutationHooks((data) => {
-        console.log("data --- ", data);
         const { id, token, ...rests } = data;
         const res = ProductService.updateProduct(id, token, { ...rests });
         return res;
@@ -162,7 +203,7 @@ export default function UserManagement() {
 
     useEffect(() => {
         if (isSuccess && data?.status === "OK") {
-            toast.success("create ook");
+            toast.success("Thêm mới sản phẩm thành công");
             setStateProduct({
                 name: "",
                 image: [],
@@ -174,15 +215,16 @@ export default function UserManagement() {
                 discount: "",
                 basePrice: "",
             });
+            setImageUrls([]);
             onCloseModal();
         } else if (isError) {
-            toast.error("create fail");
+            toast.error("Thêm mới sản phẩm thất bại");
         }
     }, [isSuccess]);
 
     useEffect(() => {
         if (isSuccessUpdate && dataUpdated?.status === "OK") {
-            toast.success("Update ook");
+            toast.success("Cập nhật sản phẩm thành công");
             setStateProductDetails({
                 name: "",
                 image: [],
@@ -194,6 +236,7 @@ export default function UserManagement() {
                 discount: "",
                 basePrice: "",
             });
+            setImageUrls([]);
             onCloseModal();
         } else if (isErrorUpdate) {
             setStateProductDetails({
@@ -213,15 +256,51 @@ export default function UserManagement() {
 
     useEffect(() => {
         if (isSuccessDeleted && dataDeleted?.status === "OK") {
-            toast.success("delete ook");
+            toast.success("Xóa sản phẩm thành công");
             handleCancelDelete();
         } else if (isErrorDeleted) {
-            toast.error("delete fail");
+            toast.error("Xóa sản phẩm thành công");
         }
     }, [isSuccessDeleted, isErrorDeleted]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        let hasError = false;
+
+        if (!stateProduct.name) {
+            msgErr.name = "Tên sản phẩm là bắt buộc!";
+            hasError = true;
+        }
+        if (!stateProduct.type) {
+            msgErr.type = "Danh mục là bắt buộc!";
+            hasError = true;
+        }
+        if (!stateProduct.basePrice) {
+            msgErr.basePrice = "Giá là bắt buộc!";
+            hasError = true;
+        }
+        if (!stateProduct.countInStock) {
+            msgErr.countInStock = "Số lượng hàng trong kho là bắt buộc!";
+            hasError = true;
+        }
+        if (stateProduct.image.length === 0) {
+            msgErr.image = "Hình ảnh sản phẩm là bắt buộc!";
+            hasError = true;
+        }
+
+        if (hasError) {
+            setErrorMessage({
+                ...errorMessage,
+                name: msgErr.name,
+                type: msgErr.type,
+                basePrice: msgErr.basePrice,
+                countInStock: msgErr.countInStock,
+                image: msgErr.image,
+            });
+            return;
+        }
+
         const params = {
             name: stateProduct.name,
             image: stateProduct.image,
@@ -249,8 +328,8 @@ export default function UserManagement() {
         const page = context?.queryKey && context?.queryKey[3];
         const res = await ProductService.getAllProduct(search, limit, page);
 
-        if (res?.status == "OK") {
-            setPaginate({ ...paginate, total: res?.totalPage });
+        if (res?.status === "OK") {
+            setPaginate((prev) => ({ ...prev, total: res?.totalPage }));
         }
 
         return res;
@@ -265,9 +344,6 @@ export default function UserManagement() {
     const fetchAllTypeProduct = async () => {
         const res = await ProductService.getAllTypeProduct();
         return res;
-        // if (res?.status === "OK") {
-        //     setTypeProduct(res?.data);
-        // }
     };
     const typeProduct = useQuery({
         queryKey: ["type-product"],
@@ -302,10 +378,10 @@ export default function UserManagement() {
     }, [rowSelected]);
 
     const user = useSelector((state) => state?.user);
-    console.log("user --- ", user);
 
-    const handleUpdateProduct = (e) => {
+    const handleUpdateProduct = async (e) => {
         e.preventDefault();
+
         mutationUpdate.mutate(
             {
                 id: rowSelected,
@@ -318,7 +394,6 @@ export default function UserManagement() {
                 },
             }
         );
-        console.log("state.pro - ", stateProductDetails);
     };
 
     const handleCancelDelete = () => {
@@ -346,21 +421,19 @@ export default function UserManagement() {
     };
 
     const handlePageClick = (data) => {
-        setPaginate({ ...paginate, page: data.selected });
+        setPaginate((prev) => ({ ...prev, page: data.selected }));
         window.scrollTo({
             top: 0,
             behavior: "smooth",
         });
     };
 
-    console.log(paginate);
-
     return (
         <div className="sm:px-6 lg:pr-[70px]">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
                     <h1 className="text-base font-semibold leading-6 text-gray-900">
-                        Products
+                        SẢN PHẨM
                     </h1>
                 </div>
                 <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -369,7 +442,7 @@ export default function UserManagement() {
                         type="button"
                         className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
-                        Add products
+                        Thêm mới
                     </button>
                 </div>
             </div>
@@ -384,25 +457,25 @@ export default function UserManagement() {
                                             scope="col"
                                             className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                                         >
-                                            Product Name
+                                            Tên sản phẩm
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                                         >
-                                            Type
+                                            Danh mục
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                                         >
-                                            Price
+                                            Giá
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                                         >
-                                            Count In Stock
+                                            Hàng tồn
                                         </th>
                                         <th
                                             scope="col"
@@ -422,7 +495,7 @@ export default function UserManagement() {
                                                 setRowSelected(item._id)
                                             }
                                         >
-                                            <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                            <td className="py-5 pl-4 pr-3 text-sm sm:pl-0">
                                                 <div className="flex items-center">
                                                     <div className="h-11 w-11 flex-shrink-0">
                                                         <img
@@ -450,7 +523,7 @@ export default function UserManagement() {
                                             </td>
                                             <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                                                 <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                                                    {item.price}
+                                                    {item.price.toLocaleString()}
                                                 </span>
                                             </td>
                                             <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
@@ -463,7 +536,7 @@ export default function UserManagement() {
                                                     }
                                                     className="text-indigo-600 hover:text-indigo-900 mr-4"
                                                 >
-                                                    Edit
+                                                    Sửa
                                                 </button>
                                                 <button
                                                     onClick={() =>
@@ -473,7 +546,7 @@ export default function UserManagement() {
                                                     }
                                                     className="text-red-600 hover:text-red-900"
                                                 >
-                                                    Delete
+                                                    Xóa
                                                 </button>
                                             </td>
                                         </tr>
@@ -482,8 +555,8 @@ export default function UserManagement() {
                             </table>
                             <div className="flex justify-center">
                                 <ReactPaginate
-                                    previousLabel={"< previous"}
-                                    nextLabel={"next >"}
+                                    previousLabel={"<<"}
+                                    nextLabel={">>"}
                                     breakLabel="..."
                                     pageCount={paginate?.total}
                                     pageRangeDisplayed={3}
@@ -503,7 +576,8 @@ export default function UserManagement() {
                 </div>
             </Loading>
 
-            {/* -------------------------------create------------------------------- */}
+            {/* =========================================CREATE========================================= */}
+
             <Dialog
                 open={openModal}
                 onClose={onCloseModal}
@@ -526,7 +600,7 @@ export default function UserManagement() {
                                     // className="container bg-white w-full h-[80%] max-w-lg mx-auto rounded-lg shadow py-6 px-8 relative overflow-auto"
                                 >
                                     <h3 className="uppercase text-2xl font-semibold py-4">
-                                        Add Product
+                                        thêm mới sản phẩm
                                     </h3>
                                     <div className="flex flex-wrap -mx-3 mb-6">
                                         <div className="relative w-full px-3">
@@ -534,16 +608,16 @@ export default function UserManagement() {
                                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                                 htmlFor="grid-password"
                                             >
-                                                product name
+                                                Tên sản phẩm
                                             </label>
                                             <InputComponent
                                                 value={stateProduct.name}
                                                 onChange={handleOnChange}
                                                 name="name"
                                             />
-                                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
+                                            <div className="text-sm text-red-600">
+                                                {errorMessage.name}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap -mx-3 mb-6">
@@ -552,7 +626,7 @@ export default function UserManagement() {
                                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                                 htmlFor="grid-password"
                                             >
-                                                type
+                                                Danh mục
                                             </label>
                                             <select
                                                 className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -585,9 +659,9 @@ export default function UserManagement() {
                                                     />
                                                 </div>
                                             )}
-                                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
+                                            <div className="text-sm text-red-600">
+                                                {errorMessage.type}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap -mx-3 mb-6">
@@ -596,95 +670,17 @@ export default function UserManagement() {
                                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                                 htmlFor="grid-password"
                                             >
-                                                price
-                                            </label>
-                                            <InputComponent
-                                                value={stateProduct.price}
-                                                onChange={handleOnChange}
-                                                name="price"
-                                            />
-                                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-wrap -mx-3 mb-6">
-                                        <div className="relative w-full px-3">
-                                            <label
-                                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                                htmlFor="grid-password"
-                                            >
-                                                rating
-                                            </label>
-                                            <InputComponent
-                                                value={stateProduct.rating}
-                                                onChange={handleOnChange}
-                                                name="rating"
-                                            />
-                                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-wrap -mx-3 mb-6">
-                                        <div className="relative w-full px-3">
-                                            <label
-                                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                                htmlFor="grid-password"
-                                            >
-                                                description
-                                            </label>
-                                            {/* <InputComponent
-                                                value={stateProduct.description}
-                                                onChange={handleOnChange}
-                                                name="description"
-                                            /> */}
-                                            <textarea
-                                                value={stateProduct.description}
-                                                onChange={handleOnChange}
-                                                name="description"
-                                                cols={50}
-                                                rows={7}
-                                            />
-                                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-wrap -mx-3 mb-6">
-                                        <div className="relative w-full px-3">
-                                            <label
-                                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                                htmlFor="grid-password"
-                                            >
-                                                discount
-                                            </label>
-                                            <InputComponent
-                                                value={stateProduct.discount}
-                                                onChange={handleOnChange}
-                                                name="discount"
-                                            />
-                                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-wrap -mx-3 mb-6">
-                                        <div className="relative w-full px-3">
-                                            <label
-                                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                                htmlFor="grid-password"
-                                            >
-                                                base Price
+                                                Giá gốc
                                             </label>
                                             <InputComponent
                                                 value={stateProduct.basePrice}
                                                 onChange={handleOnChange}
                                                 name="basePrice"
+                                                type="number"
                                             />
-                                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
+                                            <div className="text-sm text-red-600">
+                                                {errorMessage.basePrice}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap -mx-3 mb-6">
@@ -693,7 +689,42 @@ export default function UserManagement() {
                                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                                 htmlFor="grid-password"
                                             >
-                                                count in stock
+                                                Giảm giá
+                                            </label>
+                                            <InputComponent
+                                                value={stateProduct.discount}
+                                                onChange={handleOnChange}
+                                                name="discount"
+                                                type="number"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-wrap -mx-3 mb-6">
+                                        <div className="relative w-full px-3">
+                                            <label
+                                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                                htmlFor="grid-password"
+                                            >
+                                                Mô tả
+                                            </label>
+                                            <textarea
+                                                value={stateProduct.description}
+                                                onChange={handleOnChange}
+                                                name="description"
+                                                rows={7} // Số dòng hiển thị
+                                                className="block w-full bg-gray-200 border border-gray-300 text-gray-700 py-3 px-4 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-wrap -mx-3 mb-6">
+                                        <div className="relative w-full px-3">
+                                            <label
+                                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                                htmlFor="grid-password"
+                                            >
+                                                Số lượng hàng trong kho
                                             </label>
                                             <InputComponent
                                                 value={
@@ -701,20 +732,36 @@ export default function UserManagement() {
                                                 }
                                                 onChange={handleOnChange}
                                                 name="countInStock"
+                                                type="number"
                                             />
-                                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
+                                            <div className="text-sm text-red-600">
+                                                {errorMessage.countInStock}
+                                            </div>
                                         </div>
                                     </div>
-
+                                    <div className="flex flex-wrap -mx-3 mb-6">
+                                        <div className="relative w-full px-3">
+                                            <label
+                                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                                htmlFor="grid-password"
+                                            >
+                                                Đánh giá
+                                            </label>
+                                            <InputComponent
+                                                value={stateProduct.rating}
+                                                onChange={handleOnChange}
+                                                name="rating"
+                                                type="number"
+                                            />
+                                        </div>
+                                    </div>
                                     <div>
                                         <div>
                                             <label
                                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                                 htmlFor="user_avatar"
                                             >
-                                                product image
+                                                Hình ảnh sản phẩm
                                             </label>
                                             <input
                                                 className="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-4 rounded border border-gray-300 file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-white hover:file:bg-gray-100 hover:file:text-gray-700"
@@ -726,19 +773,20 @@ export default function UserManagement() {
                                                     handleChangeAvatar(event);
                                                 }}
                                             />
+                                            <div className="text-sm text-red-600">
+                                                {errorMessage.image}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex gap-4">
-                                        {stateProduct?.image?.map(
-                                            (image, index) => (
-                                                <img
-                                                    key={index}
-                                                    className="mt-4 w-20 h-20 object-cover"
-                                                    src={image}
-                                                    alt=""
-                                                />
-                                            )
-                                        )}
+                                        {imageUrls?.map((image, index) => (
+                                            <img
+                                                key={index}
+                                                className="mt-4 w-20 h-20 object-cover"
+                                                src={image}
+                                                alt=""
+                                            />
+                                        ))}
                                     </div>
 
                                     <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
@@ -746,7 +794,7 @@ export default function UserManagement() {
                                             type="submit"
                                             className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
                                         >
-                                            Create
+                                            Thêm
                                         </button>
                                         <button
                                             type="button"
@@ -754,7 +802,7 @@ export default function UserManagement() {
                                             onClick={() => setOpenModal(false)}
                                             className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
                                         >
-                                            Cancel
+                                            Hủy
                                         </button>
                                     </div>
                                 </form>
@@ -764,9 +812,10 @@ export default function UserManagement() {
                 </div>
             </Dialog>
 
-            {/* -------------------------------update------------------------------- */}
+            {/* =========================================UPDATE========================================= */}
+
             <FormEdit
-                title="CHI TIET SAN PHAM"
+                title="CẬP NHẬT THÔNG TIN SẢN PHẨM"
                 isOpen={openModalEdit}
                 onClose={() => setOpenModalEdit(false)}
             >
@@ -780,7 +829,7 @@ export default function UserManagement() {
                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                 htmlFor="grid-password"
                             >
-                                product name
+                                Tên sản phẩm
                             </label>
                             <InputComponent
                                 value={stateProductDetails.name}
@@ -798,16 +847,13 @@ export default function UserManagement() {
                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                 htmlFor="grid-password"
                             >
-                                type
+                                Danh mục
                             </label>
                             <InputComponent
                                 value={stateProductDetails.type}
                                 onChange={handleOnChangeDetails}
                                 name="type"
                             />
-                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
                         </div>
                     </div>
                     <div className="flex flex-wrap -mx-3 mb-6">
@@ -816,79 +862,7 @@ export default function UserManagement() {
                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                 htmlFor="grid-password"
                             >
-                                price
-                            </label>
-                            <InputComponent
-                                value={stateProductDetails.price}
-                                onChange={handleOnChangeDetails}
-                                name="price"
-                            />
-                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
-                        </div>
-                    </div>
-                    <div className="flex flex-wrap -mx-3 mb-6">
-                        <div className="relative w-full px-3">
-                            <label
-                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                htmlFor="grid-password"
-                            >
-                                rating
-                            </label>
-                            <InputComponent
-                                value={stateProductDetails.rating}
-                                onChange={handleOnChangeDetails}
-                                name="rating"
-                            />
-                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
-                        </div>
-                    </div>
-                    <div className="flex flex-wrap -mx-3 mb-6">
-                        <div className="relative w-full px-3">
-                            <label
-                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                htmlFor="grid-password"
-                            >
-                                description
-                            </label>
-                            <InputComponent
-                                value={stateProductDetails.description}
-                                onChange={handleOnChangeDetails}
-                                name="description"
-                            />
-                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
-                        </div>
-                    </div>
-                    <div className="flex flex-wrap -mx-3 mb-6">
-                        <div className="relative w-full px-3">
-                            <label
-                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                htmlFor="grid-password"
-                            >
-                                discount
-                            </label>
-                            <InputComponent
-                                value={stateProductDetails.discount}
-                                onChange={handleOnChangeDetails}
-                                name="discount"
-                            />
-                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
-                            {message.address}
-                        </p> */}
-                        </div>
-                    </div>
-                    <div className="flex flex-wrap -mx-3 mb-6">
-                        <div className="relative w-full px-3">
-                            <label
-                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                htmlFor="grid-password"
-                            >
-                                base Price
+                                Giá gốc
                             </label>
                             <InputComponent
                                 value={stateProductDetails.basePrice}
@@ -906,12 +880,71 @@ export default function UserManagement() {
                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                 htmlFor="grid-password"
                             >
-                                count in stock
+                                Giảm giá
+                            </label>
+                            <InputComponent
+                                value={stateProductDetails.discount}
+                                onChange={handleOnChangeDetails}
+                                name="discount"
+                            />
+                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
+                            {message.address}
+                        </p> */}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap -mx-3 mb-6">
+                        <div className="relative w-full px-3">
+                            <label
+                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                htmlFor="grid-password"
+                            >
+                                Mô tả
+                            </label>
+
+                            <textarea
+                                value={stateProductDetails.description}
+                                onChange={handleOnChangeDetails}
+                                name="description"
+                                rows={7} // Số dòng hiển thị
+                                className="block w-full bg-gray-200 border border-gray-300 text-gray-700 py-3 px-4 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            />
+                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
+                            {message.address}
+                        </p> */}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap -mx-3 mb-6">
+                        <div className="relative w-full px-3">
+                            <label
+                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                htmlFor="grid-password"
+                            >
+                                Hàng tồn
                             </label>
                             <InputComponent
                                 value={stateProductDetails.countInStock}
                                 onChange={handleOnChangeDetails}
                                 name="countInStock"
+                            />
+                            {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
+                            {message.address}
+                        </p> */}
+                        </div>
+                    </div>
+                    <div className="flex flex-wrap -mx-3 mb-6">
+                        <div className="relative w-full px-3">
+                            <label
+                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                htmlFor="grid-password"
+                            >
+                                Đánh giá
+                            </label>
+                            <InputComponent
+                                value={stateProductDetails.rating}
+                                onChange={handleOnChangeDetails}
+                                name="rating"
                             />
                             {/* <p className="italic text-red-500 text-xs absolute -bottom-5">
                             {message.address}
@@ -925,27 +958,37 @@ export default function UserManagement() {
                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                 htmlFor="user_avatar"
                             >
-                                product image
+                                Hình ảnh sản phẩm
                             </label>
                             <input
                                 className="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-4 rounded border border-gray-300 file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-white hover:file:bg-gray-100 hover:file:text-gray-700"
                                 aria-describedby="user_avatar_help"
                                 id="user_avatar"
                                 type="file"
+                                multiple
                                 onChange={(event) => {
                                     handleChangeProductDetails(event);
                                 }}
                             />
                         </div>
                     </div>
-                    <div>
-                        {stateProductDetails?.image && (
+                    <div className="flex flex-wrap gap-4">
+                        {stateProductDetails.image?.map((image, index) => (
                             <img
+                                key={index}
                                 className="mt-4 w-20 h-20 object-cover"
-                                src={stateProductDetails?.image}
+                                src={image}
                                 alt=""
                             />
-                        )}
+                        ))}
+                        {imageUrls?.map((image, index) => (
+                            <img
+                                key={index}
+                                className="mt-4 w-20 h-20 object-cover"
+                                src={image}
+                                alt=""
+                            />
+                        ))}
                     </div>
 
                     <div className="flex justify-center gap-3">
@@ -954,13 +997,13 @@ export default function UserManagement() {
                             className="block text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 my-4 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                             type="button"
                         >
-                            Cancel
+                            Hủy
                         </button>
                         <button
                             className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 my-4 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                             type="submit"
                         >
-                            Update
+                            Sửa
                         </button>
                     </div>
                 </form>
@@ -972,7 +1015,7 @@ export default function UserManagement() {
                 onClose={handleCancelDelete}
                 onClick={handleDeleteProduct}
             >
-                <div>Xoa khong?</div>
+                <div>Xác nhận xóa sản phẩm?</div>
             </ModalConfirmDelete>
         </div>
     );

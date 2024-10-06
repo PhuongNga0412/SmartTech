@@ -26,7 +26,8 @@ const authMiddleWare = (req, res, next) => {
 
 const authUserMiddleWare = (req, res, next) => {
     const token = req.headers.token.split(" ")[1];
-    const userId = req.params.id;
+    const userId = req.body.user;
+    console.log("day la gi", req.body, token);
     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
         if (err) {
             return res.status(404).json({

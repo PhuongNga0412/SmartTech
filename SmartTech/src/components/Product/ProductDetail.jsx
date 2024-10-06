@@ -1,5 +1,5 @@
-import ProductCard from "@/components/Product/ProductCard";
 import * as ProductService from "@/services//ProductService";
+import * as WishlistService from "@/services/WishlistService";
 
 import {
     IconDelivery,
@@ -8,25 +8,69 @@ import {
     IconReturn,
     Wishlist,
 } from "@/icons";
-import { useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Loading } from "@/components/LoadingComponent/Loading";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addOrderProduct } from "../../redux/slides/orderSlide";
+import { toast } from "react-toastify";
+import { addWishlist } from "@/redux/slides/wishlistSlide";
+import ProductCard from "@/components/Product/ProductCard";
 
 const ProductDetail = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
+    const location = useLocation();
     const [numProduct, setNumProduct] = useState(1);
+
+    const user = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+
+    // const [typeProduct, setTypeProduct] = useState();
+    const fetchProductAll = async () => {
+        const limit = 100;
+        const res = await ProductService.getAllProduct("", limit, 0);
+        return res;
+    };
+
+    const { data: products } = useQuery({
+        queryKey: ["products"],
+        queryFn: fetchProductAll,
+        retry: 3,
+        retryDelay: 1000,
+    });
+    console.log(products);
+    // const fetchAllTypeProduct = async () => {
+    //     const res = await ProductService.getAllTypeProduct();
+    //     if (res?.status === "OK") {
+    //         setTypeProduct(res?.data);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     fetchAllTypeProduct();
+    // }, []);
 
     const onChange = (value) => {
         setNumProduct(Number(value));
     };
 
     const handleChangeCount = (type) => {
-        if (type === "decrease") {
-            setNumProduct(numProduct - 1);
-        } else {
-            setNumProduct(numProduct + 1);
-        }
+        setNumProduct((prev) => {
+            let newValue;
+            if (type === "decrease") {
+                newValue = Math.max(prev - 1, 1);
+            } else {
+                newValue = Math.min(prev + 1, productDetails?.countInStock);
+                if (newValue === productDetails?.countInStock) {
+                    alert(
+                        "Số lượng bạn muốn thêm đã đạt số lượng tối đa có sẵn trong kho."
+                    );
+                }
+            }
+            return newValue;
+        });
     };
 
     const fetchGetDetailsProduct = async (context) => {
@@ -43,41 +87,95 @@ const ProductDetail = () => {
         enabled: !!id,
     });
 
+    const [selectedImage, setSelectedImage] = useState(
+        productDetails?.image?.[0]
+    );
+
+    useEffect(() => {
+        if (productDetails?.image?.length > 0) {
+            setSelectedImage(productDetails.image[0]);
+        }
+    }, [productDetails]);
+
+    const handleAddOrderProduct = () => {
+        if (!user?.id) {
+            navigate("/login", { state: location?.pathname });
+        } else {
+            toast.success("Thêm sản phẩm vào giỏ hàng");
+            dispatch(
+                addOrderProduct({
+                    orderItem: {
+                        name: productDetails?.name,
+                        amount: numProduct,
+                        image: productDetails?.image,
+                        price: productDetails?.price,
+                        product: productDetails?._id,
+                    },
+                })
+            );
+        }
+    };
+    const wishlist = useSelector((state) => state.wishlist);
+
+    const handleAddWishlist = async () => {
+        const check = wishlist.wishlistItems.find(
+            (item) => item?._id === productDetails?._id
+        );
+        if (!check) {
+            try {
+                await WishlistService.addToWishlist(
+                    user.id,
+                    productDetails._id
+                );
+                toast.success("Sản phẩm đã được thêm vào wishlist!");
+                dispatch(addWishlist({ product: productDetails }));
+            } catch (error) {
+                toast.error("Không thể thêm sản phẩm vào wishlist.");
+            }
+        }
+    };
+    const relatedProducts = products?.data?.filter(
+        (item) => item?.type === productDetails?.type
+    );
+    console.log("1", relatedProducts);
+
+    // Hàm để lấy ngẫu nhiên 4 sản phẩm từ danh sách
+    const getRandomProducts = (products, count) => {
+        if (!products || products.length === 0) return [];
+        // Shuffle mảng
+        const shuffled = products.sort(() => 0.5 - Math.random());
+        // Lấy ra `count` sản phẩm đầu tiên
+        return shuffled.slice(0, count);
+    };
+
+    // Lấy 4 sản phẩm ngẫu nhiên
+    const randomRelatedProducts = getRandomProducts(relatedProducts, 4);
+
     return (
         <Loading isLoading={isLoading}>
             <div>
                 <div className="uppercase text-sm text-gray-500 mt-[80px]">
-                    Home / {productDetails?.type} / {productDetails?.name}
+                    <Link to="/">Home</Link> / {productDetails?.type} /{" "}
+                    {productDetails?.name}
                 </div>
-                <div className="bg-white flex gap-[70px] mt-[80px] mb-[140px]">
-                    <div className="flex flex-1 gap-[30px]">
-                        <div className="flex flex-col gap-4 min-w-[170px]">
-                            <img
-                                src={productDetails?.image?.[0]}
-                                alt="Product 1"
-                                className="h-[138px] object-cover rounded"
-                            />
-                            <img
-                                src="https://cdn.mos.cms.futurecdn.net/JfqkFvWFtf6PE6UmkBHYG8.jpg"
-                                alt="Product 2"
-                                className="h-[138px] object-cover rounded"
-                            />
-                            <img
-                                src="https://files.tecnoblog.net/wp-content/uploads/2024/02/galaxy-z-flip6-5k2-1060x596.jpg"
-                                alt="Product 3"
-                                className="h-[138px] object-cover rounded"
-                            />
-                            <img
-                                src="https://fscl01.fonpit.de/userfiles/7676838/image/Galaxy_Z_Flip_0004-w782.jpg"
-                                alt="Product 3"
-                                className="h-[138px] object-cover rounded"
-                            />
+                <div className="bg-white lg:flex lg:gap-[70px] mt-[80px] mb-[140px]">
+                    <div className="md:flex flex-1 gap-[30px]">
+                        <div className="flex flex-wrap md:flex-col gap-4 ">
+                            {productDetails?.image?.map((img, index) => (
+                                <img
+                                    onClick={() => setSelectedImage(img)}
+                                    key={index}
+                                    src={img}
+                                    alt="Product 1"
+                                    className="w-[170px] h-[138px] object-cover rounded"
+                                />
+                            ))}
                         </div>
                         <div>
                             <img
-                                src="https://primerphone.com/wp-content/uploads/2023/03/2023-03-05_140948-599x598.png"
+                                src={selectedImage}
                                 alt="Product 4"
-                                className="min-w-[500px] h-full object-cover rounded"
+                                className="w-[500px] object-cover rounded"
                             />
                         </div>
                     </div>
@@ -95,7 +193,7 @@ const ProductDetail = () => {
                                 ({productDetails?.rating})
                             </span>
                             <span className="text-sm text-green-500 ml-4">
-                                In Stock
+                                Còn hàng
                             </span>
                         </div>
                         <div className="mt-4 text-2xl">
@@ -105,26 +203,6 @@ const ProductDetail = () => {
                             {productDetails?.description}
                         </p>
                         <div className="h-[0.5px] mt-6 bg-black"></div>
-                        {/* <div className="mt-6 flex items-center gap-6">
-                            <label className="block text-xl">Colours:</label>
-                            <div className="mt-1 flex space-x-2">
-                                <button className="w-6 h-6 bg-red-500 rounded-full border border-gray-300 focus:outline-none"></button>
-                                <button className="w-6 h-6 bg-gray-300 rounded-full border border-gray-300 focus:outline-none"></button>
-                            </div>
-                        </div> */}
-                        {/* <div className="mt-6 flex gap-6 items-center">
-                            <label className="block text-xl">Size:</label>
-                            <div className="mt-1 flex space-x-2">
-                                {["XS", "S", "M", "L", "XL"].map((size) => (
-                                    <button
-                                        key={size}
-                                        className="h-8 w-8 border border-gray-300 rounded text-sm text-center font-medium text-gray-700 focus:outline-none hover:bg-red-500 hover:text-white"
-                                    >
-                                        {size}
-                                    </button>
-                                ))}
-                            </div>
-                        </div> */}
                         <div className="mt-6 flex items-center space-x-4">
                             <div className="flex items-center divide-x divide-gray-300 rounded-md border border-gray-300">
                                 <div>
@@ -157,10 +235,16 @@ const ProductDetail = () => {
                                     </button>
                                 </div>
                             </div>
-                            <button className="px-12 py-[10px] font-medium bg-red-500 text-white rounded">
-                                Buy Now
+                            <button
+                                onClick={handleAddOrderProduct}
+                                className="px-12 py-[10px] font-medium bg-red-500 text-white rounded"
+                            >
+                                Thêm vào giỏ hàng
                             </button>
-                            <button className="px-1 border border-gray-300 rounded">
+                            <button
+                                onClick={handleAddWishlist}
+                                className="px-1 border border-gray-300 rounded"
+                            >
                                 {Wishlist}
                             </button>
                         </div>
@@ -195,14 +279,14 @@ const ProductDetail = () => {
                     <div className="flex items-center gap-4 mb-[60px]">
                         <div className="w-[20px] h-[40px] bg-red-500 rounded"></div>
                         <h3 className="font-semibold text-red-500">
-                            Related Item
+                            Sản phẩm liên quan
                         </h3>
                     </div>
-                    {/* <div className="flex gap-[30px]">
-                        {products.map((item) => (
-                            <ProductCard key={item.id} data={item} />
+                    <div className="flex gap-[30px]">
+                        {randomRelatedProducts?.map((item) => (
+                            <ProductCard key={item?._id} data={item} />
                         ))}
-                    </div> */}
+                    </div>
                 </div>
             </div>
         </Loading>

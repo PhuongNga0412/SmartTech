@@ -10,8 +10,10 @@ import { HiChevronLeft } from "react-icons/hi";
 import { Semiclone } from "@/icons";
 import ProductCard from "@/components/Product/ProductCard";
 import { Loading } from "@/components/LoadingComponent/Loading";
+import CountdownTimer from "@/components/CountdownTimer/CountdownTimer";
 
 const FlashSale = ({ products, isLoading }) => {
+    const targetDate = new Date("2024-10-06T23:59:59");
     return (
         <div>
             <div className="flex items-center gap-4">
@@ -20,33 +22,7 @@ const FlashSale = ({ products, isLoading }) => {
             </div>
             <div className="relative flex items-center gap-[87px] mt-[13px]">
                 <h2 className="font-semibold text-4xl">Flash Sales</h2>
-                <div className="flex gap-4">
-                    <div>
-                        <p className="font-medium text-xs">Days</p>
-                        <div className="flex items-center gap-4">
-                            <p className="font-bold text-3xl">03</p>
-                            <div>{Semiclone}</div>
-                        </div>
-                    </div>
-                    <div>
-                        <p className="font-medium text-xs">Hours</p>
-                        <div className="flex items-center gap-4">
-                            <p className="font-bold text-3xl">23</p>
-                            <div>{Semiclone}</div>
-                        </div>
-                    </div>
-                    <div>
-                        <p className="font-medium text-xs">Minutes</p>
-                        <div className="flex items-center gap-4">
-                            <p className="font-bold text-3xl">19</p>
-                            <div>{Semiclone}</div>
-                        </div>
-                    </div>
-                    <div>
-                        <p className="font-medium text-xs">Seconds</p>
-                        <p className="font-bold text-3xl">56</p>
-                    </div>
-                </div>
+                <CountdownTimer targetDate={targetDate} />
                 <div className="absolute right-0 bottom-0 flex">
                     <div className="relative right-32 transform ">
                         <div className="swiper-button-prev bg-white border-2  rounded-full cursor-pointer">
@@ -74,17 +50,17 @@ const FlashSale = ({ products, isLoading }) => {
                         modules={[FreeMode, Navigation]}
                         className="mySwiper mt-10"
                     >
-                        {products?.map(
-                            (item) =>
-                                item.discount && (
-                                    <SwiperSlide
-                                        className="swiper-slide"
-                                        key={item._id}
-                                    >
-                                        <ProductCard data={item} />
-                                    </SwiperSlide>
-                                )
-                        )}
+                        {products
+                            ?.filter((item) => item.discount) // Lọc những sản phẩm có discount
+                            .sort((a, b) => b.discount - a.discount) // Sắp xếp sản phẩm theo discount giảm dần
+                            .map((item) => (
+                                <SwiperSlide
+                                    className="swiper-slide"
+                                    key={item._id}
+                                >
+                                    <ProductCard data={item} />
+                                </SwiperSlide>
+                            ))}
                     </Swiper>
                 </div>
             </Loading>

@@ -5,7 +5,7 @@ import * as UserService from "@/services/UserService";
 import { Dialog, DialogPanel, PopoverGroup } from "@headlessui/react";
 import { FiSearch } from "react-icons/fi";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
     AccountIcon,
     CartIcon,
@@ -22,7 +22,9 @@ import { searchProduct } from "@/redux/slides/productSlide";
 
 const Header = () => {
     const dispatch = useDispatch();
-    // const navigate = useNavigate();
+    const order = useSelector((state) => state.order);
+    const wishlist = useSelector((state) => state.wishlist);
+    const navigate = useNavigate();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [userAvatar, setUserAvatar] = useState("");
@@ -44,12 +46,28 @@ const Header = () => {
     }, [user?.avatar]);
 
     const handleLogOut = async () => {
-        await UserService.logoutUser();
-        dispatch(resetUser());
+        setIsOpen(!isOpen);
+        try {
+            await UserService.logoutUser();
+            dispatch(resetUser());
+            localStorage.removeItem("access_token");
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    };
+
+    const handleNavigateMyOrder = () => {
+        toggleDropdown();
+        navigate("/my-order", {
+            state: {
+                id: user?.id,
+                token: user?.access_token,
+            },
+        });
     };
 
     return (
-        <header className="bg-white sticky top-0 z-10">
+        <header className="bg-white sticky top-0 z-20">
             <nav
                 aria-label="Global"
                 className="container max-w-[1170px] mx-auto flex items-center justify-between pt-10 pb-4"
@@ -78,25 +96,25 @@ const Header = () => {
                         to="/"
                         className="font-semibold leading-6 text-gray-900"
                     >
-                        Home
+                        Trang Chủ
                     </Link>
                     <Link
                         to="/product"
                         className="font-semibold leading-6 text-gray-900"
                     >
-                        Product
+                        Sản Phẩm
                     </Link>
                     <Link
                         to="/contact"
                         className="font-semibold leading-6 text-gray-900"
                     >
-                        Contact
+                        Liên Hệ
                     </Link>
                     <Link
                         to="/about"
                         className="font-semibold leading-6 text-gray-900"
                     >
-                        About
+                        Giới Thiệu
                     </Link>
                 </PopoverGroup>
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-4">
@@ -114,20 +132,20 @@ const Header = () => {
                             type="text"
                             id="search-navbar"
                             className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="What are you looking for?"
+                            placeholder="Nhập tên sản phẩm..."
                         />
                     </div>
 
                     <div className="relative text-2xl">
                         <Link to="/wishlist">{HeartIcon}</Link>
                         <div className="absolute inset-1/2 -top-1/2 w-4 h-4 bg-red-500 rounded-full text-white flex justify-center items-center text-sm">
-                            4
+                            {wishlist?.wishlistItems?.length}
                         </div>
                     </div>
                     <div className="relative text-2xl">
                         <Link to="/cart">{CartIcon}</Link>
                         <div className="absolute inset-1/2 -top-[3px] w-4 h-4 bg-red-500 rounded-full text-white flex justify-center items-center text-sm">
-                            4
+                            {order?.orderItems?.length}
                         </div>
                     </div>
                     {user?.access_token ? (
@@ -152,7 +170,7 @@ const Header = () => {
                                         className="flex gap-4 items-center"
                                     >
                                         <RiUserSettingsLine className="text-2xl" />
-                                        <p>My Account</p>
+                                        <p>Thông tin tài khoản</p>
                                     </Link>
                                     {user?.isAdmin && (
                                         <Link
@@ -163,23 +181,22 @@ const Header = () => {
                                             <div>
                                                 <RiSettings3Line className="text-2xl" />
                                             </div>
-                                            <p>System Management</p>
+                                            <p>Quản lý hệ thống</p>
                                         </Link>
                                     )}
-                                    <Link
-                                        to="/cart"
-                                        onClick={toggleDropdown}
+                                    <button
+                                        onClick={handleNavigateMyOrder}
                                         className="flex gap-4 items-center"
                                     >
                                         <div>{IconMallBag}</div>
-                                        <p>My Order</p>
-                                    </Link>
+                                        <p>Đơn hàng của tôi</p>
+                                    </button>
                                     <button
                                         onClick={handleLogOut}
                                         className="flex gap-4 items-center"
                                     >
                                         <div>{IconLogOut}</div>
-                                        <p>Log Out</p>
+                                        <p>Đăng xuất</p>
                                     </button>
                                 </div>
                             )}
@@ -198,7 +215,7 @@ const Header = () => {
                                         className="flex gap-4 items-center"
                                     >
                                         <FiLogIn className="text-2xl" />
-                                        <p>Login</p>
+                                        <p>Đăng nhập</p>
                                     </Link>
 
                                     <Link
@@ -207,7 +224,7 @@ const Header = () => {
                                         className="flex gap-4 items-center"
                                     >
                                         <FiLogIn className="text-2xl" />
-                                        <p>Sign Up</p>
+                                        <p>Đăng ký</p>
                                     </Link>
                                 </div>
                             )}
@@ -248,19 +265,25 @@ const Header = () => {
                                     to="/"
                                     className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                                 >
-                                    Home
+                                    Trang Chủ
+                                </Link>
+                                <Link
+                                    to="/product"
+                                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                                >
+                                    Sản Phẩm
                                 </Link>
                                 <Link
                                     to="/contact"
                                     className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                                 >
-                                    Contact
+                                    Liên Hệ
                                 </Link>
                                 <Link
                                     to="/about"
                                     className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                                 >
-                                    About
+                                    Giới Thiệu
                                 </Link>
                             </div>
                             <div className="py-6">
@@ -268,13 +291,13 @@ const Header = () => {
                                     to="/login"
                                     className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                                 >
-                                    Log in
+                                    Đăng nhập
                                 </Link>
                                 <Link
                                     to="/signup"
                                     className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                                 >
-                                    Sign Up
+                                    Đăng ký
                                 </Link>
                             </div>
                         </div>

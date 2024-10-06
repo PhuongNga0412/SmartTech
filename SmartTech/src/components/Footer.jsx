@@ -8,11 +8,11 @@ import { Link } from "react-router-dom";
 
 const navigation = {
     account: [
-        { id: 1, name: "My Account", href: "#" },
-        { id: 2, name: "Login / Register", href: "#" },
-        { id: 3, name: "Cart", href: "#" },
-        { id: 4, name: "Wishlist", href: "#" },
-        { id: 5, name: "Shop", href: "#" },
+        { id: 1, name: "My Account", link: "/account" },
+        { id: 2, name: "Login / Register", link: "/login" },
+        { id: 3, name: "Product", link: "/product" },
+        { id: 4, name: "Cart", link: "/cart" },
+        { id: 5, name: "Wishlist", link: "/wishlist" },
     ],
     link: [
         { id: 1, name: "Privacy Policy", href: "#" },
@@ -61,11 +61,9 @@ export default function Example() {
 
                 <div>
                     <h4 className="text-xl font-medium">Support</h4>
-                    <p className="mt-6">
-                        111 Bijoy sarani, Dhaka, DH 1515, Bangladesh.
-                    </p>
-                    <p className="my-4">exclusive@gmail.com</p>
-                    <p>+88015-88888-9999</p>
+                    <p className="mt-6">Bắc Từ Liêm, Hà Nội</p>
+                    <p className="my-4">pg.nga0412@gmail.com</p>
+                    <p>0983337723</p>
                 </div>
 
                 <div>
@@ -73,7 +71,16 @@ export default function Example() {
                     <ul className="mt-6 space-y-4">
                         {navigation.account.map((item) => (
                             <li key={item.id}>
-                                <Link to="/" className="hover:underline">
+                                <Link
+                                    to={item?.link}
+                                    className="hover:underline"
+                                    onClick={() =>
+                                        window.scrollTo({
+                                            top: 0,
+                                            behavior: "smooth",
+                                        })
+                                    }
+                                >
                                     {item.name}
                                 </Link>
                             </li>

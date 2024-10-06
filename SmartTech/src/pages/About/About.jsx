@@ -9,6 +9,7 @@ import {
     ShoppingBagIcon,
     TwitterLogo,
 } from "@/icons";
+import { Link } from "react-router-dom";
 
 const icons = [
     { id: 1, icon: ShopIcon },
@@ -20,7 +21,15 @@ const icons = [
 const About = () => {
     return (
         <div>
-            <div className="text-sm mt-[79px] mb-[42px]">Home / About</div>
+            <div className="uppercase font-bold text-sm mt-[79px] mb-[42px]">
+                <Link
+                    to="/"
+                    className="text-gray-500 hover:text-black hover:underline"
+                >
+                    trang chủ
+                </Link>{" "}
+                / <span className="text-gray-700">giới thiệu</span>
+            </div>
 
             <div className="flex gap-[75px] items-center">
                 <div className="flex-1">

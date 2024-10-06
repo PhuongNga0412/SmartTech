@@ -42,7 +42,7 @@ const loginUser = async (req, res) => {
         } else if (!isCheckEmail) {
             return res.status(200).json({
                 status: "ERR",
-                message: "The input is email",
+                message: "Email không hợp lệ",
             });
         }
 
@@ -51,7 +51,7 @@ const loginUser = async (req, res) => {
         res.cookie("refresh_token", refresh_token, {
             httpOnly: true,
             Secure: false,
-            samesite: "strict",
+            sameSite: "strict",
         });
         return res.status(200).json(newResponse);
     } catch (e) {
@@ -65,8 +65,9 @@ const updateUser = async (req, res) => {
     try {
         const userId = req.params.id;
         const data = req.body;
+        console.log("dataUpdate - ", data);
         if (!userId) {
-            return res.status(200).json({
+            return res.status(400).json({
                 status: "ERR",
                 message: "The userId is required",
             });
@@ -103,7 +104,11 @@ const deleteUser = async (req, res) => {
 
 const getAllUser = async (req, res) => {
     try {
-        const response = await UserService.getAllUser();
+        const { limit, page } = req.query;
+        const response = await UserService.getAllUser(
+            Number(limit) || 8,
+            Number(page) || 0
+        );
         return res.status(200).json(response);
     } catch (e) {
         return res.status(404).json({
@@ -155,14 +160,19 @@ const refreshToken = async (req, res) => {
 const logoutUser = async (req, res) => {
     console.log("req.cookies.refresh_token", req.cookies.refresh_token);
     try {
-        res.clearCookie("refresh_token");
+        res.clearCookie("refresh_token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+        });
         return res.status(200).json({
             status: "OK",
             message: "LOGOUT SUCCESSFULLY",
         });
     } catch (e) {
-        return res.status(404).json({
-            message: e,
+        return res.status(500).json({
+            message: "Logout failed",
+            error: e.message,
         });
     }
 };
